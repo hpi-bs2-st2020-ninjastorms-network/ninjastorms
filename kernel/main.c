@@ -91,7 +91,6 @@ kernel_main (void)
   puts("  shuriken ready");
   puts(shuriken);
 
-
   add_task(&controller_task);
   start_scheduler();
 
