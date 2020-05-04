@@ -76,11 +76,20 @@ controller_task (void)
     }
 }
 
+char shuriken[] =
+"                 /\\\n"
+"                /  \\\n"
+"                |  |\n"
+"              __/()\\__\n"
+"             /   /\\   \\\n"
+"            /___/  \\___\\\n";
+
 int
 kernel_main (void)
 {
   puts("This is ninjastorms OS");
   puts("  shuriken ready");
+  puts(shuriken);
 
   add_task(&controller_task);
   start_scheduler();
