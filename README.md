@@ -41,8 +41,10 @@ source tree, the project is built by executing
 
     make
 
-When the build completes, the kernel binary can be found in the source tree
-as a file named `ninjastorms`. See [Supported Boards](#supported-boards) for the deployment
+One may encounter the error `mkimage: file not found` during compilation
+which can be ignored because the built image works anyway. When the build
+completes, the kernel binary can be found in the source tree as a file named
+`ninjastorms`. See [Supported Boards](#supported-boards) for the deployment
 process of the built kernel.
 
 ## Supported Boards
