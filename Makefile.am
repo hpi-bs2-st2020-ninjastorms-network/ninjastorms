@@ -34,6 +34,7 @@ ninjastorms_SOURCES = \
     kernel/interrupt.c kernel/interrupt.h \
     kernel/interrupt_handler.S kernel/interrupt_handler.h \
     kernel/memory.h \
+    kernel/mmio.c kernel/mmio.h \
     kernel/drivers/adc.c kernel/drivers/adc.h \
     kernel/drivers/button.c kernel/drivers/button.h \
     kernel/drivers/gpio.c kernel/drivers/gpio.h \
