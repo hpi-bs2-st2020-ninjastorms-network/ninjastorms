@@ -1,0 +1,22 @@
+name: C/C++ CI
+
+on:
+  push:
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: install dependencies
+      run: sudo apt install -y gcc-arm-none-eabi binutils-arm-none-eabi gdb-multiarch openocd autoconf libtool u-boot-tools
+    - name: configure
+      run: |
+        ./autoconfigure
+        ./configure --host=arm-none-eabi BOARD=versatilepb CFLAGS="-nostdlib -nostartfiles -ffreestanding -mcpu=ARM926EJ-s -g"
+    - name: make
+      run: make
