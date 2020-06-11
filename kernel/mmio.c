@@ -19,52 +19,129 @@
  ******************************************************************************/
 
 #include "mmio.h"
-#include <stdio.h>
 
 uint8_t
 read8(uint32_t address)
 {
-	return (uint8_t) (read32(address-(address % 4)) >> ((address % 4) * 8));
+  return (uint8_t) read32(address);
 }
 
 uint16_t
 read16(uint32_t address)
 {
-	return *((volatile uint16_t*)(address));
+  return (uint16_t) read32(address);
 }
 
 uint32_t
 read32(uint32_t address)
 {
-	return *((volatile uint32_t*)(address));
+  return *((volatile uint32_t*) address);
 }
 
 uint64_t
 read64(uint32_t address)
 {
-	return *((volatile uint64_t*)(address));
+  return *((volatile uint64_t*) address);
+}
+
+// works only if address % 4 == 0
+void
+write_word(uint32_t address, uint32_t value)
+{
+  *((volatile uint32_t*) address) = value;
 }
 
 void
 write8(uint32_t address, uint8_t value)
 {
-	(*((volatile uint8_t*)(address)))=(value);
+  // write inside one word
+  uint8_t offset = address % 4;
+  uint32_t word_read = read32(address - offset);
+  uint32_t word_write = value << offset * 8;
+  uint32_t mask = ~(0xFF << offset * 8);
+  uint32_t word = (word_read & mask) | word_write;
+  write_word(address - offset, word);
 }
 
 void
 write16(uint32_t address, uint16_t value)
 {
-	(*((volatile uint16_t*)(address)))=(value);
+  uint8_t offset = address % 4;
+  if (offset != 3)
+    // write inside one word
+    {
+      uint32_t word_read = read32(address - offset);
+      uint32_t word_write = value << offset * 8;
+      uint32_t mask = ~(0xFFFF << offset * 8);
+      uint32_t word = (word_read & mask) | word_write;
+      write_word(address - offset, word);
+    }
+  else
+    // write between two words
+    {
+      uint32_t lower_word_read = read32(address - 3);
+      uint32_t lower_word_write = value << 24;
+      uint32_t lower_word = ((lower_word_read << 8) >> 8) | lower_word_write;
+      write_word(address - 3, lower_word);
+
+      uint32_t upper_word_read = read32(address + 1);
+      uint32_t upper_word_write = value >> 8;
+      uint32_t upper_word = ((upper_word_read >> 8) << 8) | upper_word_write;
+      write_word(address + 1, upper_word);
+    }
 }
 
 void
 write32(uint32_t address, uint32_t value)
 {
-	(*((volatile uint32_t*)(address)))=(value);
+  uint8_t lower_offset = address % 4;
+  if (lower_offset)
+    // write between two words
+    {
+      uint8_t upper_offset = 4 - lower_offset;
+
+      uint32_t lower_word_read = read32(address - lower_offset);
+      uint32_t lower_word_write = value << lower_offset * 8;
+      uint32_t lower_word = ((lower_word_read << upper_offset * 8) >> upper_offset * 8) | lower_word_write;
+      write_word(address - lower_offset, lower_word);
+
+      uint32_t upper_word_read = read32(address + upper_offset);
+      uint32_t upper_word_write = value >> upper_offset * 8;
+      uint32_t upper_word = ((upper_word_read >> lower_offset * 8) << lower_offset * 8) | upper_word_write;
+      write_word(address + upper_offset, upper_word);
+    }
+  else
+    // write exactly one word
+    write_word(address, value);
 }
 
 void
 write64(uint32_t address, uint64_t value)
 {
-	(*((volatile uint64_t*)(address)))=(value);
+  uint8_t lower_offset = address % 4;
+  if (lower_offset)
+    // write between three words
+    {
+      uint8_t upper_offset = 4 - lower_offset;
+
+      uint32_t lower_word_read = read32(address - lower_offset);
+      uint32_t lower_word_write = (uint32_t) (value << lower_offset * 8);
+      uint32_t lower_word = ((lower_word_read << upper_offset * 8) >> upper_offset * 8) | lower_word_write;
+      write_word(address - lower_offset, lower_word);
+
+      uint32_t middle_word_read = read32(address + upper_offset);
+      uint32_t middle_word_write = (uint32_t) (value >> upper_offset * 8);
+      write_word(address + upper_offset, middle_word_write);
+
+      uint32_t upper_word_read = read32(address + 4 + upper_offset);
+      uint32_t upper_word_write = (uint32_t) (value >> (upper_offset + 4) * 8);
+      uint32_t upper_word = ((upper_word_read >> lower_offset * 8) << lower_offset * 8) | upper_word_write;
+      write_word(address + 4 + upper_offset, upper_word);
+    }
+  else
+    // write exactly two words
+    {
+      write_word(address, (uint32_t) value);
+      write_word(address + 4, (uint32_t) (value >> 32)); 
+    }
 }
