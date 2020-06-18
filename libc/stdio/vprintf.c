@@ -105,6 +105,55 @@ vprintf (const char *format, __attribute__((unused)) va_list ap)
                   }
               }
               break;
+            case 'l':
+              {
+                unsigned long long x = va_arg(ap, unsigned long long);
+                char tmp[20] = { 0 };
+                int i = 0;
+                while (x)
+                  {
+                    tmp[i] = x % 10;
+                    x /= 10;
+                    ++i;
+                  }
+                if (i != 0)
+                  --i;
+                for ( ; i >= 0; --i)
+                  {
+                    if (__builtin_expect(putchar(tmp[i] + '0') == EOF, 0))
+                      return chars_written;
+                    ++chars_written;
+                  }
+              }
+              break;
+            case 'L':
+              {
+                long long x = va_arg(ap, long long);
+                char tmp[20] = { 0 };
+                int i = 0;
+                int sign = x < 0;
+                chars_written += sign;
+                if (sign)
+                  x *= -1;
+                while (x)
+                  {
+                    tmp[i] = x % 10;
+                    x /= 10;
+                    ++i;
+                  }
+                if (i != 0)
+                  --i;
+                if (sign)
+                  if (__builtin_expect(putchar('-') == EOF, 0))
+                    return chars_written;
+                for ( ; i >= 0; --i)
+                  {
+                      if (__builtin_expect(putchar(tmp[i] + '0') == EOF, 0))
+                        return chars_written;
+                    ++chars_written;
+                  }
+              }
+              break;
             case 'x':
               {
                 unsigned int x = va_arg(ap, int);
