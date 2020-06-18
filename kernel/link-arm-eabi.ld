@@ -4,20 +4,18 @@ ENTRY(Start)
 
 SECTIONS
 {
-  .text :
+  .text ALIGN (CONSTANT (COMMONPAGESIZE)) :
   {
     KEEP (*(.text.boot))
     *(.text .text.*)
   }
-  .rodata :
+
+  .rodata ALIGN (CONSTANT (COMMONPAGESIZE)) :
   {
     *(.rodata .rodata.*)
   }
 
-  . = ALIGN (CONSTANT (MAXPAGESIZE)) - ((CONSTANT (MAXPAGESIZE) - .) & (CONSTANT (MAXPAGESIZE) - 1));
-  . = DATA_SEGMENT_ALIGN (CONSTANT (MAXPAGESIZE), CONSTANT (COMMONPAGESIZE));
-
-  .preinit_array :
+  .preinit_array ALIGN (CONSTANT (COMMONPAGESIZE)) :
   {
     PROVIDE_HIDDEN (__preinit_array_start = .);
     KEEP (*(.preinit_array))
@@ -36,20 +34,21 @@ SECTIONS
     PROVIDE_HIDDEN (__fini_array_end = .);
   }
 
-  .data :
+  .data ALIGN (CONSTANT (COMMONPAGESIZE)) :
   {
     *(.data)
   }
 
-  __bss_start = .;
-  .bss :
+  .bss ALIGN (CONSTANT (COMMONPAGESIZE)) :
   {
+    PROVIDE_HIDDEN (__bss_start = .);
     *(.bss .bss.*)
-    . = ALIGN(. != 0 ? 32 / 8 : 1);
-    . += 8K;
+    PROVIDE_HIDDEN (__bss_end = .);
   }
-  __bss_end = .;
 
-  . = ALIGN(4);
+  . = ALIGN (CONSTANT (COMMONPAGESIZE));
+  PROVIDE_HIDDEN (__stack_start = .);
+
+  . = ALIGN (CONSTANT (COMMONPAGESIZE));
   __end = .;
 }
