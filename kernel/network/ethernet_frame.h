@@ -10,4 +10,4 @@ struct ethernet_frame {
     uint8_t dest_mac [6];
     ether_type ether_type;
     uint8_t payload[8];
-};
+} __attribute__((packed));

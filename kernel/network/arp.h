@@ -16,6 +16,6 @@ struct arp {
 
     uint32_t src_ip_address[4];
     uint32_t dest_ip_address[4];
-};
+} __attribute__((packed));
 
 void process_arp(const ethernet_frame* frame);
