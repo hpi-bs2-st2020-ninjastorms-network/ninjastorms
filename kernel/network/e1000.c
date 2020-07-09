@@ -29,6 +29,7 @@
 #include "kernel/logger/logger.h"
 #include "kernel/memory.h"
 #include "network_task.h"
+#include "kernel/network/pdu_handler.h"
 
 // get some memory for our e1000
 e1000_device_t* e1000;

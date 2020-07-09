@@ -56,6 +56,8 @@ ninjastorms_SOURCES = \
     kernel/network/e1000.c kernel/network/e1000.h \
     kernel/network/network_task.c kernel/network/network_task.h \
     kernel/logger/logger.c kernel/logger/logger.h
+    kernel/network/network_io.c kernel/network/network_io.h \
+    kernel/network/pdu_handler.c kernel/network/pdu_handler.h
 
 ninjastorms_LDADD = libc/libc.la -lgcc
 ninjastorms_LDFLAGS = -T kernel/link-arm-eabi.ld -Ttext $(LOADADDR)
