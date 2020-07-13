@@ -55,8 +55,10 @@ ninjastorms_SOURCES = \
     kernel/pci/pci.c kernel/pci/pci.h \
     kernel/network/e1000.c kernel/network/e1000.h \
     kernel/network/network_task.c kernel/network/network_task.h \
-    kernel/logger/logger.c kernel/logger/logger.h
+    kernel/logger/logger.c kernel/logger/logger.h \
     kernel/network/network_io.c kernel/network/network_io.h \
+    kernel/network/arp.c kernel/network/arp.h \
+    kernel/network/ethernet_frame.h \
     kernel/network/pdu_handler.c kernel/network/pdu_handler.h
 
 ninjastorms_LDADD = libc/libc.la -lgcc

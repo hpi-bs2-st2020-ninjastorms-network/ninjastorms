@@ -66,7 +66,7 @@ detect_eeprom()
 }
 
 uint8_t
-read_mac()
+read_e1000_hardware_address()
 { 
   uint32_t mem_base_mac = e1000->mem_base + MAC_OFFSET;
   if(pci_read32(mem_base_mac) != 0)
@@ -157,7 +157,7 @@ void
 start_e1000(void)
 {
   detect_eeprom();
-  read_mac();
+  read_e1000_hardware_address();
   start_link();
   enable_interrupt();
   init_receive_descriptors();
@@ -197,7 +197,7 @@ receive_packet()
       uint8_t* buf = (uint8_t *) ((uint32_t) e1000->rx_descs[e1000->rx_cur].addr);
       uint16_t len = e1000->rx_descs[e1000->rx_cur].length;
 
-      log_debug("received packet with length: %i", len)
+      // log_debug("received packet with length: %i", len)
 
       insert_packet(buf, len);
 

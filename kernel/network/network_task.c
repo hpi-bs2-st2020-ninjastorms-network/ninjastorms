@@ -21,6 +21,7 @@
 #include "network_task.h"
 #include "kernel/network/e1000.h"
 #include "kernel/logger/logger.h"
+#include "kernel/network/pdu_handler.h"
 
 #include <sys/types.h>
 #include <string.h>
@@ -37,7 +38,7 @@ network_task (void)
       if(new_packet_available())
         {
           raw_packet_t *packet = remove_packet();
-          // pdu handler
+          start_pdu_encapsulation(packet);
         }
     }
 }
