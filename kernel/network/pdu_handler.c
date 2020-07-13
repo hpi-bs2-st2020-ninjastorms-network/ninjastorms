@@ -1,43 +1,45 @@
+
+/******************************************************************************
+ *       ninjastorms - shuriken operating system                              *
+ *                                                                            *
+ *    Copyright (C) 2013 - 2016  Andreas Grapentin et al.                     *
+ *                                                                            *
+ *    This program is free software: you can redistribute it and/or modify    *
+ *    it under the terms of the GNU General Public License as published by    *
+ *    the Free Software Foundation, either version 3 of the License, or       *
+ *    (at your option) any later version.                                     *
+ *                                                                            *
+ *    This program is distributed in the hope that it will be useful,         *
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of          *
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+ *    GNU General Public License for more details.                            *
+ *                                                                            *
+ *    You should have received a copy of the GNU General Public License       *
+ *    along with this program.  If not, see <http://www.gnu.org/licenses/>.   *
+ ******************************************************************************/
+
 #include "pdu_handler.h"
 #include "kernel/network/network_io.h"
+#include "kernel/network/arp.h"
 #include "kernel/logger/logger.h"
 
-void 
-start_pdu_encapsulation(uint8_t* buf) 
+#include <stdio.h>
+
+void
+start_pdu_encapsulation(raw_packet_t *buf) 
 {
-  ethernet_frame_t* frame = (ethernet_frame_t*) buf;
+  ethernet_frame_t* frame = (ethernet_frame_t*) &(buf->data);
   
   uint16_t ether_type = switch_endian16(frame->ether_type);
   
-  // we don't wanna support ipv6 yet ;)
-  if(ether_type == ARP)
+  switch (ether_type)
     {
-      log_debug("Found ARP packet.")
-      log_debug("Dest Mac: %x", frame->dest_mac);
-      log_debug("Src mac: %x", frame->source_mac);
+      case ARP:
+        handle_arp(frame);
+        break;
+      case IPv4:
+      case IPv6: // we don't wanna support ipv6 yet ;)
+      default:
+        break;
     }
-  else if(ether_type == IPv4) 
-    {
-      // log_debug("Found IPv4 packet.")
-
-    }
-
-}
-
-void 
-handle_arp(ethernet_frame_t frame) 
-{
-  // not yet 
-}
-
-void
-print_mac(uint8_t* mac_address)
-{ 
-  // TODO
-  printf("%x", mac_address[0]);
-  for(uint16_t i = 1; i < 6; i++)
-    {
-      printf(":%x", mac_address[i]);
-    }
-  printf("\n");
 }
