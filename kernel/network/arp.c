@@ -20,26 +20,14 @@
 
 #include "arp.h"
 #include "kernel/logger/logger.h"
+#include "kernel/network/ethernet_frame.h"
+
 #include <stdio.h>
 
 void
 handle_arp(ethernet_frame_t *frame) 
 {
   log_debug("Found ARP packet.");
-  log_debug("Dest Mac: ");
-  read_mac(frame->dest_mac);
-  log_debug("Src mac: ");
-  read_mac(frame->source_mac);
-}
-
-void
-read_mac(uint8_t* mac_address)
-{
-  // TODO
-  printf("%x", mac_address[0]);
-  for(uint16_t i = 1; i < 6; i++)
-    {
-      printf(":%x", mac_address[i]);
-    }
-  printf("\n");
+  log_debug("Dest Mac: %x", get_dest_mac(frame));
+  log_debug("Src mac: %x", get_source_mac(frame));
 }
