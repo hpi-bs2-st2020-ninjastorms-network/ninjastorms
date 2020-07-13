@@ -22,8 +22,6 @@
 #include "kernel/logger/logger.h"
 #include "kernel/network/ethernet_frame.h"
 
-#include <stdio.h>
-
 void
 handle_arp(ethernet_frame_t *frame) 
 {

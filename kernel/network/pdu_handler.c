@@ -20,8 +20,8 @@
 
 #include "pdu_handler.h"
 #include "kernel/network/network_io.h"
+#include "kernel/network/ethernet_frame.h"
 #include "kernel/network/arp.h"
-#include "kernel/logger/logger.h"
 
 #include <stdio.h>
 
