@@ -21,7 +21,6 @@
 #pragma once
 
 #include <sys/types.h>
-#include "kernel/network/ethernet_frame.h"
 #include "kernel/network/network_task.h"
 
 // takes raw input from driver and starts encapsulation

@@ -20,7 +20,6 @@
 
 #include "ethernet_frame.h"
 #include <sys/types.h>
-#include <stdio.h>
 
 uint64_t
 get_source_mac(ethernet_frame_t *frame) 
