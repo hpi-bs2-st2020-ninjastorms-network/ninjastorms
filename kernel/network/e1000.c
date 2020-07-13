@@ -26,6 +26,7 @@
 #include "kernel/mmio.h"
 #include "kernel/logger/logger.h"
 #include "kernel/memory.h"
+#include "network_task.h"
 
 // get some memory for our e1000
 e1000_device_t* e1000 = (e1000_device_t*) 0x5000000;
@@ -195,6 +196,8 @@ receive_packet()
       uint16_t len = e1000->rx_descs[e1000->rx_cur].length;
 
       log_debug("received packet with length: %i", len)
+
+      insert_packet(buf, len);
 
       e1000->rx_descs[e1000->rx_cur].status = 0;
       old_cur = e1000->rx_cur;
