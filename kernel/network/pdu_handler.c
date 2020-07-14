@@ -20,7 +20,7 @@
 
 #include "pdu_handler.h"
 #include "kernel/network/network_io.h"
-#include "kernel/network/ethernet_frame.h"
+#include "kernel/network/ethernet.h"
 #include "kernel/network/arp.h"
 
 #include <stdio.h>
@@ -34,12 +34,18 @@ start_pdu_encapsulation(raw_packet_t *buf)
   
   switch (ether_type)
     {
-      case ARP:
-        handle_arp(frame);
+      case TYPE_ARP:
+        arp_receive(frame);
         break;
-      case IPv4:
-      case IPv6: // we don't wanna support ipv6 yet ;)
+      case TYPE_IPv4:
+      case TYPE_IPv6: // we don't wanna support ipv6 yet ;)
       default:
         break;
     }
+}
+
+void
+capsulate_ethernet_frame(ethernet_frame_t *frame) 
+{
+
 }

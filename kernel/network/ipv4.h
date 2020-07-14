@@ -20,18 +20,6 @@
 
 #pragma once
 
-#include <sys/types.h>
-#include "kernel/network/e1000.h"
+#define IPV4_ADDR_LEN 4
 
-#define MAX_PACKET_COUNT 128
-
-struct raw_packet {
-  uint16_t length;
-  uint8_t data[MAX_PACKET_SIZE];
-};
-typedef struct raw_packet raw_packet_t;
-
-void network_task_recv (void);
-void insert_packet (uint8_t *data, size_t len);
-raw_packet_t* remove_packet (void);
-uint8_t new_packet_available (void);
+#define OWN_IPV4_ADDR 0x0A00020A // 10.0.2.10
