@@ -188,6 +188,10 @@ vprintf (const char *format, __attribute__((unused)) va_list ap)
                 int x = va_arg(ap, int);
                 char tmp[10] = { 0 };
                 int i = 0;
+                int sign = x < 0;
+                chars_written += sign;
+                if (sign)
+                  x *= -1;
                 while (x)
                   {
                     tmp[i] = x % 0x10;
@@ -196,6 +200,74 @@ vprintf (const char *format, __attribute__((unused)) va_list ap)
                   }
                 if (i != 0)
                   --i;
+                if (sign)
+                  if (__builtin_expect(putchar('-') == EOF, 0))
+                    return chars_written;
+                for ( ; i >= 0; --i)
+                  {
+                        if (tmp[i] > 9)
+                          {
+                            if (__builtin_expect(putchar(tmp[i] + 'A' - 10) == EOF, 0))
+                              return chars_written;
+                          }
+                        else
+                          {
+                            if (__builtin_expect(putchar(tmp[i] + '0') == EOF, 0))
+                              return chars_written;
+                          }
+                    ++chars_written;
+                  }
+              }
+              break;
+            case 'y':
+              {
+                unsigned long long x = va_arg(ap, unsigned long long);
+                char tmp[20] = { 0 };
+                int i = 0;
+                while (x)
+                  {
+                    tmp[i] = x % 0x10;
+                    x /= 0x10;
+                    ++i;
+                  }
+                if (i != 0)
+                  --i;
+                for ( ; i >= 0; --i)
+                  {
+                        if (tmp[i] > 9)
+                          {
+                            if (__builtin_expect(putchar(tmp[i] + 'a' - 10) == EOF, 0))
+                              return chars_written;
+                          }
+                        else
+                          {
+                            if (__builtin_expect(putchar(tmp[i] + '0') == EOF, 0))
+                              return chars_written;
+                          }
+                    ++chars_written;
+                  }
+              }
+              break;
+            case 'Y':
+              {
+                long long x = va_arg(ap, long long);
+                char tmp[20] = { 0 };
+                int i = 0;
+                int sign = x < 0;
+                chars_written += sign;
+                if (sign)
+                  x *= -1;
+                while (x)
+                  {
+                    tmp[i] = x % 0x10;
+                    x /= 0x10;
+                    ++i;
+                  }
+                if (i != 0)
+                  --i;
+                if (sign)
+                  if (__builtin_expect(putchar('-') == EOF, 0))
+                    return chars_written;
                 for ( ; i >= 0; --i)
                   {
                         if (tmp[i] > 9)
