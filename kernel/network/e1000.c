@@ -21,6 +21,8 @@
 #include "e1000.h"
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <stddef.h>
 #include "kernel/pci/pci.h"
 #include "kernel/pci/pci_mmio.h"
 #include "kernel/mmio.h"
@@ -29,8 +31,7 @@
 #include "network_task.h"
 
 // get some memory for our e1000
-e1000_device_t* e1000 = (e1000_device_t*) 0x5000000;
-uint32_t RX_DESC_BASE = 0x6000000;
+e1000_device_t* e1000;
 
 void
 write_command(uint16_t address, uint32_t value)
@@ -89,7 +90,7 @@ init_receive_descriptors()
 {
   for(int i = 0; i < E1000_NUM_RX_DESC; i++) 
     {
-      e1000->rx_descs[i].addr = RX_DESC_BASE + i * (MAX_PACKET_SIZE + sizeof(e1000_rx_desc_t));
+      e1000->rx_descs[i].addr = (uint32_t) malloc(MAX_PACKET_SIZE + sizeof(e1000_rx_desc_t));
       e1000->rx_descs[i].status = 0;
     }
 
@@ -215,6 +216,13 @@ is_e1000_available(void)
 void
 init_e1000(void)
 {
+  e1000 = (e1000_device_t*) malloc(sizeof(e1000_device_t));
+  if(e1000 == NULL)
+    {
+      printf("[E1000] No memory for e1000 struct left!\n");
+      return;
+    }
+
   printf("[E1000] Initializing driver.\n");
   e1000->pci_device = get_pci_device(INTEL_VEND, E1000_DEV);
   
