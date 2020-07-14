@@ -121,7 +121,7 @@ kernel_main (void)
   pci_init();
   init_e1000();
 
-  add_task(&network_task);
+  add_task(&network_task_recv);
   //add_task(&task_a);
   //add_task(&task_b);
   //add_task(&task_c);

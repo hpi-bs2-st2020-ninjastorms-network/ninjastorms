@@ -58,8 +58,9 @@ ninjastorms_SOURCES = \
     kernel/logger/logger.c kernel/logger/logger.h \
     kernel/network/network_io.c kernel/network/network_io.h \
     kernel/network/arp.c kernel/network/arp.h \
-    kernel/network/ethernet_frame.c kernel/network/ethernet_frame.h \
-    kernel/network/pdu_handler.c kernel/network/pdu_handler.h
+    kernel/network/ethernet.c kernel/network/ethernet.h \
+    kernel/network/pdu_handler.c kernel/network/pdu_handler.h \
+    kernel/network/ipv4.h
 
 ninjastorms_LDADD = libc/libc.la -lgcc
 ninjastorms_LDFLAGS = -T kernel/link-arm-eabi.ld -Ttext $(LOADADDR)

@@ -26,12 +26,16 @@
 #include <sys/types.h>
 #include <string.h>
 
-static int queue_start  = 0;
-static int queue_end    = 0;
-static raw_packet_t packet_queue[MAX_PACKET_COUNT] = { 0 };
+static int recv_queue_start  = 0;
+static int recv_queue_end    = 0;
+static raw_packet_t recv_packet_queue[MAX_PACKET_COUNT] = { 0 };
+
+static int send_queue_start  = 0;
+static int send_queue_end    = 0;
+static raw_packet_t send_packet_queue[MAX_PACKET_COUNT] = { 0 };
 
 void
-network_task (void)
+network_task_recv (void)
 {  
   while(1) 
     {
@@ -46,12 +50,12 @@ network_task (void)
 void
 insert_packet (uint8_t *data, size_t len)
 {
-  int new_end = (queue_end + 1) % MAX_PACKET_COUNT;
-  if (new_end != queue_start)
+  int new_end = (recv_queue_end + 1) % MAX_PACKET_COUNT;
+  if (new_end != recv_queue_start)
     {
-      packet_queue[queue_end].length = len;
-      memcpy(&packet_queue[queue_end].data, data, len);
-      queue_end = new_end;
+      recv_packet_queue[recv_queue_end].length = len;
+      memcpy(&recv_packet_queue[recv_queue_end].data, data, len);
+      recv_queue_end = new_end;
     }
   else 
     {
@@ -62,16 +66,24 @@ insert_packet (uint8_t *data, size_t len)
 raw_packet_t*
 remove_packet (void)
 {
-  if (queue_start == queue_end)
+  if (recv_queue_start == recv_queue_end)
     return 0;
 
-  raw_packet_t* packet = &packet_queue[queue_start];
-  queue_start = (queue_start + 1) % MAX_PACKET_COUNT;
+  raw_packet_t* packet = &recv_packet_queue[recv_queue_start];
+  recv_queue_start = (recv_queue_start + 1) % MAX_PACKET_COUNT;
   return packet;
 }
 
 uint8_t
 new_packet_available (void) 
 {
-  return queue_start != queue_end;
+  return recv_queue_start != recv_queue_end;
 }
+
+
+
+
+
+
+
+
