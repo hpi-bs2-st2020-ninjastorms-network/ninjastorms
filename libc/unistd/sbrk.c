@@ -18,13 +18,31 @@
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.   *
  ******************************************************************************/
 
-#pragma once
+#ifdef HAVE_CONFIG_H
+#  include <config.h>
+#endif
 
-/*
- * Our subset of stdlib.h
- */
-
+#include <errno.h>
+#include <stddef.h>
 #include <sys/types.h>
 
-void *malloc(size_t size);
-void free(void *ptr);
+#include "kernel/memory.h"
+
+uint32_t current_heap_address = HEAP_START;
+
+/*
+ * Very simple implementation of sbrk that uses a global memory pool.
+ * Should probably be changed to real program break in the future.
+ */
+void *sbrk(size_t increment)
+{
+  if(current_heap_address + increment > HEAP_START + HEAP_SIZE)
+    {
+      // No memory left
+      errno = ENOMEM;
+      return NULL;
+    }
+  void *ptr = (void*) current_heap_address;
+  current_heap_address += increment;
+  return ptr;
+}

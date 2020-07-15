@@ -21,10 +21,9 @@
 #pragma once
 
 /*
- * Our subset of stdlib.h
+ * Our subset of unistd.h
  */
 
 #include <sys/types.h>
 
-void *malloc(size_t size);
-void free(void *ptr);
+void *sbrk(uint32_t increment);
