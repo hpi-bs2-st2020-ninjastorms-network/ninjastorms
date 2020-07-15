@@ -45,6 +45,27 @@ static const size_t overhead = ALIGN_16(sizeof(block_t));
  * A very basic malloc that uses a sbrk with global memory. Use with care!
  * It always returns 16-byte aligned memory addresses.
  * It is also NOT thread safe!
+ *
+ * Space layout is as follows:
+ *
+ * Offset              Memory
+ *  0x00   +--------------------------------+
+ *         | 16-byte aligned header block_t |
+ *  0x10   +--------------------------------+
+ *         |   previously allocated space   |
+ *         |         (e.g. 4 byte)          |
+ *  0x14   +--------------------------------+
+ *            unused space to align header
+ *  0x20   +--------------------------------+
+ *         |  16-byte aligned next header   |
+ *  0x30   +--------------------------------+
+ *         |       .................        |
+ *         |     requested program space    |
+ *         |       .................        |
+ *         +--------------------------------+
+ * In this example the return value of malloc is a pointer to 0x30 so header
+ * at 0x20 won't be overwritten by the requester.
+ * free can then calculate back from 0x30 to 0x20 to get original header.
  */
 void *
 malloc(size_t size)
