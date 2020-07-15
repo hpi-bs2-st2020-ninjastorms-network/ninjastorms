@@ -20,12 +20,14 @@ libc_libc_la_SOURCES = \
     libc/string/memcmp.c \
     libc/string/memcpy.c \
     libc/string/memset.c \
+    libc/unistd/sbrk.c \
     libc/include/errno.h \
     libc/include/stddef.h \
     libc/include/stdio.h \
     libhc/include/stdlib.h \
     libc/include/string.h \
-    libc/include/sys/types.h
+    libc/include/sys/types.h \
+    libc/include/unistd.h
 
 noinst_PROGRAMS = ninjastorms
 

@@ -25,6 +25,7 @@ enum SYMBOLIC_ERRNO {
     ETOOMANYTASKS = 2, //Too many tasks
     ENOTIMPLEMENTED = 3, //Operation not implemented
     EINVALIDSYSCALLNO = 4, //Syscall no is not recognized
+    ENOMEM = 12, // Cannot allocate memory
 };
 
 extern int errno;
