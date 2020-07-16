@@ -19,15 +19,20 @@
  ******************************************************************************/
 
 #include "ethernet.h"
-#include "arp.h"
-#include <sys/types.h>
+#include "kernel/network/arp.h"
+#include "kernel/network/e1000.h"
+#include "kernel/network/network_io.h"
 #include "kernel/logger/logger.h"
+
+#include <sys/types.h>
+#include <stdlib.h>
+#include <string.h>
 
 uint64_t
 get_source_mac(ethernet_frame_t *frame) 
 {
-  uint64_t source_mac = *(uint64_t*)frame->source_mac;
-  return source_mac & 0x0000FFFFFFFFFFFF;
+  uint64_t src_mac = *(uint64_t*)frame->src_mac;
+  return src_mac & 0x0000FFFFFFFFFFFF;
 }
 
 uint64_t
@@ -38,8 +43,20 @@ get_dest_mac(ethernet_frame_t *frame)
 }
 
 void
-send_ethernet(void *buf, size_t len)
+send_ethernet(uint64_t dest_mac, ether_type eth_type, void *payload, size_t len)
 {
-  log_debug("Buffer - Target IP", arp_get_dest_ip_addr(((arp_frame_for_send_t*) buf)->body.dest_ip_address));
-  return;
+  // make sure ethernet frame is at least 60 bytes long
+  if (len < 46)
+    len = 46;
+  ethernet_frame_t *eth_frame = (ethernet_frame_t *) malloc(sizeof(ethernet_frame_t) + len);
+  uint64_t converted_dest_mac = switch_endian64(dest_mac << 16);
+
+  memcpy(eth_frame->dest_mac, &converted_dest_mac, 6);
+  copy_my_mac(eth_frame->src_mac);
+  eth_frame->ether_type = switch_endian16(eth_type);
+  memcpy(eth_frame->payload, payload, len);
+
+  send_packet(eth_frame, sizeof(ethernet_frame_t) + len);
+
+  free(eth_frame);
 }

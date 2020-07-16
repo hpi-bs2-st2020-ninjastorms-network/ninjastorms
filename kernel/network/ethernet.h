@@ -31,13 +31,13 @@ typedef enum {
 } ether_type;
 
 struct __ethernet_frame {
-  volatile uint8_t dest_mac [ETH_MAC_ADDRESS_LENGTH];
-  volatile uint8_t source_mac [ETH_MAC_ADDRESS_LENGTH];
-  volatile ether_type ether_type;
-  volatile uint8_t payload[];
+  uint8_t dest_mac [ETH_MAC_ADDRESS_LENGTH];
+  uint8_t src_mac [ETH_MAC_ADDRESS_LENGTH];
+  ether_type ether_type;
+  uint8_t payload[];
 } __attribute__((packed));
 typedef struct __ethernet_frame ethernet_frame_t;
 
 uint64_t get_source_mac (ethernet_frame_t *frame);
 uint64_t get_dest_mac (ethernet_frame_t *frame);
-void send_ethernet(void *frame, size_t len);
+void send_ethernet(uint64_t dest_mac, ether_type ether_type, void *payload, size_t len);

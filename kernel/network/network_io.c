@@ -35,3 +35,9 @@ switch_endian32(uint32_t val)
     ((val>>8)&0xff00)     |
     ((val<<24)&0xff000000);
 }
+
+uint64_t
+switch_endian64(uint64_t val)
+{
+  return __builtin_bswap64(val);
+}

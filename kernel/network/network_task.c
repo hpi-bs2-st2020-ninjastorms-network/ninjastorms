@@ -36,8 +36,8 @@ static raw_packet_t send_packet_queue[MAX_PACKET_COUNT] = { 0 };
 
 void
 network_task_recv (void)
-{  
-  while(1) 
+{
+  while(1)
     {
       if(new_packet_available())
         {
@@ -57,7 +57,7 @@ insert_packet (uint8_t *data, size_t len)
       memcpy(&recv_packet_queue[recv_queue_end].data, data, len);
       recv_queue_end = new_end;
     }
-  else 
+  else
     {
       log_warn("Packet Queue full!");
     }
