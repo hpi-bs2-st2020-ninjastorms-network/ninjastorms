@@ -37,9 +37,9 @@ struct arp_frame {
   uint8_t hardware_addr_len;  // ethernet = 6
   uint8_t protocol_addr_len;  // ipv4 = 4
   uint16_t opcode; // ARP OP Code: see above
-  uint8_t src_hardware_addr[6];
+  mac_address_t src_hardware_addr;
   uint32_t src_ip_address;
-  uint8_t dest_hardware_addr[6];
+  mac_address_t dest_hardware_addr;
   uint32_t dest_ip_address;
 } __attribute__((packed));
 typedef struct arp_frame arp_frame_t;
@@ -47,11 +47,4 @@ typedef struct arp_frame arp_frame_t;
 void arp_receive(ethernet_frame_t *frame);
 void arp_handle_request(arp_frame_t *frame);
 void arp_handle_reply(arp_frame_t *frame);
-void arp_build_frame(arp_frame_t *frame, uint16_t opcode, uint64_t dest_hw, uint32_t dest_ip);
-uint64_t arp_get_src_hw_address(arp_frame_t *frame);
-uint64_t arp_get_dest_hw_address(arp_frame_t *frame);
-uint16_t arp_get_hw_type(arp_frame_t *frame);
-uint16_t arp_get_protocol_type(arp_frame_t *frame);
-uint32_t arp_get_src_ip_addr(arp_frame_t *frame);
-uint32_t arp_get_dest_ip_addr(arp_frame_t *frame);
-uint32_t arp_get_opcode(arp_frame_t *arp_frame);
+void arp_build_frame(arp_frame_t *frame, uint16_t opcode, mac_address_t dest_hw, mac_address_t dest_ip);

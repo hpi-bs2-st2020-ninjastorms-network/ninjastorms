@@ -22,7 +22,8 @@
 
 #include <sys/types.h>
 
-// Convert from little endian to big endian
-uint16_t switch_endian16(uint16_t val);
-uint32_t switch_endian32(uint32_t val);
-uint64_t switch_endian64(uint64_t val);
+uint32_t htonl(uint32_t hostlong);
+uint16_t htons(uint16_t hostshort);
+uint32_t ntohl(uint32_t netlong);
+uint16_t ntohs(uint16_t netshort);
+uint8_t is_little_endian();

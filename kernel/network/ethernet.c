@@ -28,22 +28,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-uint64_t
-get_source_mac(ethernet_frame_t *frame) 
-{
-  uint64_t src_mac = *(uint64_t*)frame->src_mac;
-  return src_mac & 0x0000FFFFFFFFFFFF;
-}
-
-uint64_t
-get_dest_mac(ethernet_frame_t *frame) 
-{
-  uint64_t dest_mac = *(uint64_t*)frame->dest_mac;
-  return dest_mac & 0x0000FFFFFFFFFFFF;
-}
-
 void
-send_ethernet(uint64_t dest_mac, ether_type eth_type, void *payload, size_t len)
+send_ethernet(mac_address_t dest_mac, ether_type eth_type, void *payload, size_t len)
 {
   // make sure ethernet frame is at least 60 bytes long
   if (len < 46)

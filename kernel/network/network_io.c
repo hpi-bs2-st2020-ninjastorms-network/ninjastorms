@@ -19,25 +19,63 @@
  ******************************************************************************/
 
 #include "network_io.h"
+#include "kernel/mmio.h"
 
-uint16_t
-switch_endian16(uint16_t val)
-{
-  return (val>>8) | (val<<8);
-}
+// https://developer.arm.com/documentation/dui0224/i/programmer-s-reference/status-and-system-control-registers/configuration-registers-sys-cfgdatax
+// Register storing e.g. endianess
+#define SYS_CFGDATA2 0x1000002C
 
+// Convert int from host byte order to network byte order
 uint32_t
-switch_endian32(uint32_t val)
+htonl(uint32_t hostlong)
 {
-  return 
-    ((val>>24)&0xff)      |
-    ((val<<8)&0xff0000)   |
-    ((val>>8)&0xff00)     |
-    ((val<<24)&0xff000000);
+  return __builtin_bswap32(hostlong);
 }
 
-uint64_t
-switch_endian64(uint64_t val)
+// Convert short from host byte order to network byte order
+uint16_t
+htons(uint16_t hostshort)
 {
-  return __builtin_bswap64(val);
+  return __builtin_bswap16(hostlong);
+}
+
+// Convert int from network byte order to host byte order
+uint32_t
+ntohl(uint32_t netlong)
+{
+  return __builtin_bswap32(netlong);
+}
+
+// Convert short from network byte order to host byte order
+uint16_t
+ntohs(uint16_t netshort)
+{
+  return __builtin_bswap16(netshort);
+}
+
+// Convert mac address from host byte order to network byte order
+mac_address_t
+hton_mac(mac_address_t mac)
+{
+  mac_address_t new;
+  for(int i = 0; i < 6; i++)
+    new->address[5-i] = mac->address[i];
+  return new;
+}
+
+// Convert mac address from network byte order to host byte order
+mac_address_t
+ntoh_mac(mac_address_t mac)
+{
+  mac_address_t new;
+  for(int i = 0; i < 6; i++)
+    new->address[5-i] = mac->address[i];
+  return new;
+}
+
+// Check whether current running mode is set to little or big endian
+uint8_t
+is_little_endian()
+{
+  return read32(SYS_CFGDATA2) & (1 << 1);
 }
