@@ -20,16 +20,18 @@
  
 #include "e1000.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <stddef.h>
 #include "kernel/pci/pci.h"
 #include "kernel/pci/pci_mmio.h"
 #include "kernel/mmio.h"
 #include "kernel/logger/logger.h"
 #include "kernel/memory.h"
-#include "network_task.h"
+#include "kernel/network/network_task.h"
 #include "kernel/network/pdu_handler.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stddef.h>
+#include <string.h>
 
 // get some memory for our e1000
 e1000_device_t* e1000;
@@ -43,6 +45,7 @@ write_command(uint16_t address, uint32_t value)
 uint32_t
 read_command(uint32_t address)
 {
+  
   return pci_read32(e1000->mem_base+address);
 }
 
@@ -84,6 +87,12 @@ read_e1000_hardware_address()
   else
     return 0;
   return 1;
+}
+
+void
+copy_my_mac(void *dest)
+{
+  memcpy(dest, e1000->mac, 6);
 }
 
 void

@@ -178,6 +178,7 @@ extern e1000_device_t* e1000;
 void init_e1000(void);
 void irq_handler_e1000(void);
 
-uint32_t send_packet(const void * p_data, uint16_t p_len);
+uint32_t send_packet(const void *p_data, uint16_t p_len);
 void receive_packet();
 uint8_t is_e1000_available();
+void copy_my_mac(void *dest);
