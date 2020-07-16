@@ -30,7 +30,7 @@ start_pdu_encapsulation(raw_packet_t *buf)
 {
   ethernet_frame_t* frame = (ethernet_frame_t*) &(buf->data);
   
-  uint16_t ether_type = switch_endian16(frame->ether_type);
+  uint16_t ether_type = ntohs(frame->ether_type);
   
   switch (ether_type)
     {

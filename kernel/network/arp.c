@@ -36,19 +36,24 @@ arp_receive(ethernet_frame_t *frame)
 
   if(ntohs(arp_frame->hardware_type) != HTYPE_ETHERNET || arp_frame->hardware_addr_len != ETH_MAC_ADDRESS_LENGTH)
     {
+#ifdef ARP_DEBUG
       log_warn("Hardware type is not supported! (no ethernet) hwtype: %x addr_len: %x", arp_frame->hardware_type, arp_frame->hardware_addr_len)
+#endif
       return;
     }
   if(ntohs(arp_frame->protocol_type) != TYPE_IPv4 || arp_frame->protocol_addr_len != IPV4_ADDR_LEN)
     {
+#ifdef ARP_DEBUG
       log_warn("Protocol type is not supported! (no ipv4)");
+#endif
       return;
     }
-
+#ifdef ARP_DEBUG
   log_debug("Found ARP packet.");
-  log_debug("Destination HW: %y", ntoh_mac(arp_frame->dest_hardware_addr));
-  log_debug("Source HW: %y", ntoh_mac(arp_frame->src_hardware_addr);
-  
+  log_debug("Destination HW: %s", mac_to_str(ntoh_mac(arp_frame->dest_hardware_addr)));
+  log_debug("Source HW: %s", mac_to_str(ntoh_mac(arp_frame->src_hardware_addr)));
+#endif
+
   switch(ntohs(arp_frame->opcode))
     {
       case ARP_REQUEST:
@@ -67,19 +72,16 @@ arp_handle_request(arp_frame_t *frame)
 {
   if(ntohl(frame->dest_ip_address) == OWN_IPV4_ADDR)
     {
-      // ITS ME
+#ifdef ARP_DEBUG
       log_debug("I have been requested... let's answer.");
-
-      uint64_t src_hw_address = ntoh_mac(arp_frame->src_hardware_addr);
-
+#endif
       arp_frame_t arp_frame = arp_build_frame(
-        arp_frame,
         ARP_REPLY,
         ntoh_mac(frame->src_hardware_addr), // use original sender as destination
         ntohl(frame->src_ip_address)
       );
 
-      send_ethernet(src_hw_address, TYPE_ARP, &arp_frame, sizeof(arp_frame_t));
+      send_ethernet(ntoh_mac(frame->src_hardware_addr), TYPE_ARP, &arp_frame, sizeof(arp_frame_t));
     }
 }
 
@@ -90,7 +92,7 @@ arp_handle_reply(arp_frame_t *frame)
 }
 
 arp_frame_t
-arp_build_frame( uint16_t opcode, mac_address_t dest_hw, uint32_t dest_ip)
+arp_build_frame(uint16_t opcode, mac_address_t dest_hw, uint32_t dest_ip)
 {
   arp_frame_t frame;
   frame.hardware_type = htons(HTYPE_ETHERNET);
@@ -101,7 +103,7 @@ arp_build_frame( uint16_t opcode, mac_address_t dest_hw, uint32_t dest_ip)
 
   frame.src_hardware_addr = hton_mac(my_mac());
   frame.src_ip_address = htonl(OWN_IPV4_ADDR);
-  frame.dest_hardware_addr = hton_mac(dest_hw)
+  frame.dest_hardware_addr = hton_mac(dest_hw);
   frame.dest_ip_address = htonl(dest_ip);
   return frame;
 }

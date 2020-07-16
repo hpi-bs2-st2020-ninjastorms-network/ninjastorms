@@ -28,6 +28,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define INTTOHEXCHAR(val) ((val) > 9 ? (val)+'a'-10 : (val) + '0')
+
 void
 send_ethernet(mac_address_t dest_mac, ether_type eth_type, void *payload, size_t len)
 {
@@ -35,14 +37,31 @@ send_ethernet(mac_address_t dest_mac, ether_type eth_type, void *payload, size_t
   if (len < 46)
     len = 46;
   ethernet_frame_t *eth_frame = (ethernet_frame_t *) malloc(sizeof(ethernet_frame_t) + len);
-  uint64_t converted_dest_mac = switch_endian64(dest_mac << 16);
-
-  memcpy(eth_frame->dest_mac, &converted_dest_mac, 6);
-  copy_my_mac(eth_frame->src_mac);
-  eth_frame->ether_type = switch_endian16(eth_type);
+  eth_frame->dest_mac = hton_mac(dest_mac);
+  eth_frame->src_mac = my_mac(); // mac address is stored in big endian on nc, so no swap
+  eth_frame->ether_type = htons(eth_type);
   memcpy(eth_frame->payload, payload, len);
 
   send_packet(eth_frame, sizeof(ethernet_frame_t) + len);
 
   free(eth_frame);
+}
+
+const char *
+mac_to_str(mac_address_t mac)
+{
+  // ab:cd:ef:gh:ij:kl
+  char *tmp = "00:11:22:33:44:55";
+  int i = 0;
+
+  tmp[0] = INTTOHEXCHAR(mac.address[0] >> 4);
+  tmp[1] = INTTOHEXCHAR(mac.address[0] & 0x0F);
+  for(int i = 1; i < 6; i++)
+    {
+      int j = i*3;
+      tmp[j-1] = ':';
+      tmp[j] = INTTOHEXCHAR(mac.address[i] >> 4);
+      tmp[j+1] = INTTOHEXCHAR(mac.address[i] & 0x0F);
+    }
+  return tmp;
 }

@@ -20,6 +20,7 @@
 
 #include "network_io.h"
 #include "kernel/mmio.h"
+#include "kernel/network/ethernet.h"
 
 // https://developer.arm.com/documentation/dui0224/i/programmer-s-reference/status-and-system-control-registers/configuration-registers-sys-cfgdatax
 // Register storing e.g. endianess
@@ -36,7 +37,7 @@ htonl(uint32_t hostlong)
 uint16_t
 htons(uint16_t hostshort)
 {
-  return __builtin_bswap16(hostlong);
+  return __builtin_bswap16(hostshort);
 }
 
 // Convert int from network byte order to host byte order
@@ -59,7 +60,7 @@ hton_mac(mac_address_t mac)
 {
   mac_address_t new;
   for(int i = 0; i < 6; i++)
-    new->address[5-i] = mac->address[i];
+    new.address[5-i] = mac.address[i];
   return new;
 }
 
@@ -69,7 +70,7 @@ ntoh_mac(mac_address_t mac)
 {
   mac_address_t new;
   for(int i = 0; i < 6; i++)
-    new->address[5-i] = mac->address[i];
+    new.address[5-i] = mac.address[i];
   return new;
 }
 
