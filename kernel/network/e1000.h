@@ -23,6 +23,8 @@
 #include "kernel/pci/pci.h"
 #include <sys/types.h>
 
+#include "kernel/network/ethernet.h"
+
 #define E1000_DEBUG
 
 #define INTEL_VEND     0x8086  // Vendor ID for Intel 
@@ -166,11 +168,11 @@ struct __e1000_device {
   uint32_t io_base;     // IO Base Address
   uint32_t mem_base;   // MMIO Base Address
   uint8_t eeprom_exists;  // A flag indicating if eeprom exists
-  uint8_t mac [6];      // A buffer for storing the mac address
+  mac_address_t mac;      // A buffer for storing the mac address
   uint16_t rx_cur;      // Current Receive Descriptor Buffer
   uint16_t tx_cur;      // Current Transmit Descriptor Buffer
   pci_device_t *pci_device; // Corresponding PCI Device
-  };
+};
 typedef struct __e1000_device e1000_device_t;
 
 extern e1000_device_t* e1000;
@@ -181,4 +183,4 @@ void irq_handler_e1000(void);
 uint32_t send_packet(const void *p_data, uint16_t p_len);
 void receive_packet();
 uint8_t is_e1000_available();
-void copy_my_mac(void *dest);
+mac_address_t my_mac();

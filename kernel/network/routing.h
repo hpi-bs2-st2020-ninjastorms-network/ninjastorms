@@ -20,29 +20,14 @@
 
 #pragma once
 
-#include <sys/types.h>
+#include "kernel/network/ethernet.h
 
-#include "kernel/network/ethernet.h"
+#define MAX_ARP_TABLE_ENTRIES 10
 
-#define ETH_MAC_ADDRESS_LENGTH 6
+struct __arp_table_entry {
+  uint32_t ip;
+  mac_address_t mac;
+}
+typedef struct __arp_table_entry arp_table_entry_t;
 
-typedef enum {
-  TYPE_ARP = 0x0806,
-  TYPE_IPv4 = 0x0800,
-  TYPE_IPv6 = 0x86dd
-} ether_type;
-
-struct __ethernet_frame {
-  mac_address_t dest_mac;
-  mac_address_t src_mac;
-  ether_type ether_type;
-  uint8_t payload[];
-} __attribute__((packed));
-typedef struct __ethernet_frame ethernet_frame_t;
-
-struct __mac_address {
-  uint8_t address[6];
-} __attribute__((packed));
-typedef struct __mac_address mac_address_t;
-
-void send_ethernet(mac_address_t dest_mac, ether_type ether_type, void *payload, size_t len);
+mac_address_t get_mac_for_ip(uint32_t ip);

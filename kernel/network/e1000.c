@@ -27,6 +27,7 @@
 #include "kernel/memory.h"
 #include "kernel/network/network_task.h"
 #include "kernel/network/pdu_handler.h"
+#include "kernel/network/ethernet.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -75,12 +76,12 @@ read_e1000_hardware_address()
   if(pci_read32(mem_base_mac) != 0)
     {
       printf("[E1000] MAC ");
-      e1000->mac[0] = pci_read8(mem_base_mac);
-      printf("%x", e1000->mac[0]);
+      e1000->mac->address[0] = pci_read8(mem_base_mac);
+      printf("%x", e1000->mac->address[0]);
       for(uint16_t i = 1; i < 6; i++)
         {
-          e1000->mac[i] = pci_read8(mem_base_mac + i);
-          printf(":%x", e1000->mac[i]);
+          e1000->mac->address[i] = pci_read8(mem_base_mac + i);
+          printf(":%x", e1000->mac->address[i]);
         }
       printf("\n");
     }
@@ -89,10 +90,10 @@ read_e1000_hardware_address()
   return 1;
 }
 
-void
-copy_my_mac(void *dest)
+mac_address_t
+my_mac()
 {
-  memcpy(dest, e1000->mac, 6);
+  return e1000->mac;
 }
 
 void

@@ -18,31 +18,30 @@
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.   *
  ******************************************************************************/
 
-#pragma once
+#include "kernel/logger/logger.h"
 
-#include <sys/types.h>
+static arp_table_entry_t arp_table[MAX_ARP_TABLE_ENTRIES];
+static uint32_t next_slot = 0;
 
-#include "kernel/network/ethernet.h"
+mac_address_t
+get_mac_for_ip(uint32_t ip)
+{
+  for (uint32_t i = 0; i < MAX_ARP_TABLE_ENTRIES; i++)
+    {
+      arp_table_entry_t entry = arp_table[i];
+      if (entry.ip == ip)
+        log_debug("arp table used for %x", ip)
+        return entry.mac;
+    }
 
-#define ETH_MAC_ADDRESS_LENGTH 6
+  // no arp table entry
+  mac_address_t mac = 0; // send arp request
 
-typedef enum {
-  TYPE_ARP = 0x0806,
-  TYPE_IPv4 = 0x0800,
-  TYPE_IPv6 = 0x86dd
-} ether_type;
+  arp_table_entry_t new_entry = { 0 };
+  new_entry.ip = ip;
+  new_entry.mac = mac;
+  arp_table[next_slot] = new_entry;
+  next_slot = (next_slot + 1) % MAX_ARP_TABLE_ENTRIES;
 
-struct __ethernet_frame {
-  mac_address_t dest_mac;
-  mac_address_t src_mac;
-  ether_type ether_type;
-  uint8_t payload[];
-} __attribute__((packed));
-typedef struct __ethernet_frame ethernet_frame_t;
-
-struct __mac_address {
-  uint8_t address[6];
-} __attribute__((packed));
-typedef struct __mac_address mac_address_t;
-
-void send_ethernet(mac_address_t dest_mac, ether_type ether_type, void *payload, size_t len);
+  return mac;
+}
