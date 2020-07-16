@@ -28,7 +28,7 @@
 
 #include "kernel/memory.h"
 
-uint32_t current_heap_address = HEAP_START;
+static uint32_t current_heap_address = HEAP_START;
 
 /*
  * Very simple implementation of sbrk that uses a global memory pool.
