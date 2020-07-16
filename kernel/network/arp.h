@@ -23,6 +23,9 @@
 #include <sys/types.h>
 #include "ethernet.h"
 
+// DEBUG LEVEL
+#define ARP_DEBUG
+
 // OPCODES
 #define ARP_REQUEST 0x0001
 #define ARP_REPLY 0x0002
@@ -47,4 +50,4 @@ typedef struct arp_frame arp_frame_t;
 void arp_receive(ethernet_frame_t *frame);
 void arp_handle_request(arp_frame_t *frame);
 void arp_handle_reply(arp_frame_t *frame);
-void arp_build_frame(arp_frame_t *frame, uint16_t opcode, mac_address_t dest_hw, mac_address_t dest_ip);
+arp_frame_t arp_build_frame(uint16_t opcode, mac_address_t dest_hw, uint32_t dest_ip);

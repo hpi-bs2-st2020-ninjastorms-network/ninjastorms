@@ -22,8 +22,6 @@
 
 #include <sys/types.h>
 
-#include "kernel/network/ethernet.h"
-
 #define ETH_MAC_ADDRESS_LENGTH 6
 
 typedef enum {
@@ -31,6 +29,11 @@ typedef enum {
   TYPE_IPv4 = 0x0800,
   TYPE_IPv6 = 0x86dd
 } ether_type;
+
+struct __mac_address {
+  uint8_t address[6];
+} __attribute__((packed));
+typedef struct __mac_address mac_address_t;
 
 struct __ethernet_frame {
   mac_address_t dest_mac;
@@ -40,9 +43,6 @@ struct __ethernet_frame {
 } __attribute__((packed));
 typedef struct __ethernet_frame ethernet_frame_t;
 
-struct __mac_address {
-  uint8_t address[6];
-} __attribute__((packed));
-typedef struct __mac_address mac_address_t;
 
-void send_ethernet(mac_address_t dest_mac, ether_type ether_type, void *payload, size_t len);
+void send_ethernet (mac_address_t dest_mac, ether_type ether_type, void *payload, size_t len);
+const char *mac_to_str (mac_address_t mac);
