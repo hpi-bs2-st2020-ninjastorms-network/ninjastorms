@@ -57,7 +57,7 @@ insert_packet (uint8_t *data, size_t len)
     }
   else
     {
-      log_warn("Packet Queue full!");
+      LOG_WARN("Packet Queue full!");
     }
 }
 

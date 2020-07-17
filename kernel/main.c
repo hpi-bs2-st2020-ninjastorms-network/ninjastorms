@@ -117,7 +117,7 @@ kernel_main (void)
   puts("  shuriken ready");
   puts(shuriken);
 
-  log_debug("Logger initialized!");
+  LOG_DEBUG("Logger initialized!")
 
   pci_init();
   init_e1000();
