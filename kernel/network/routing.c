@@ -21,36 +21,29 @@
 #include "kernel/logger/logger.h"
 #include "kernel/network/ethernet.h"
 #include "kernel/network/routing.h"
+#include <stdlib.h>
 
-static uint32_t next_slot = 0;
-static arp_table_entry_t arp_table[MAX_ARP_TABLE_ENTRIES] = {0};
+uint32_t next_slot;
+arp_table_entry_t *arp_table;
 
 mac_address_t
 get_mac_for_ip(uint32_t ip)
 {
-  for (uint32_t i = 0; i < MAX_ARP_TABLE_ENTRIES; i++)
-    {
-      arp_table_entry_t entry = arp_table[i];
-      if (entry.ip == ip)
-        {
-#ifdef ROUTING_DEBUG
-          log_debug("ip %x found in arp table", ip)
-#endif
-          return entry.mac;
-        }
-    }
+  uint32_t position = ip_in_arp_table(ip);
+  if (position != -1)
+    return arp_table[position].mac;
 
   return NULL_MAC;
 }
 
 void
 add_arp_table_entry(mac_address_t mac, uint32_t ip) {
-#ifdef ROUTING_DEBUG
-  log_debug("added ip %x in arp table", ip)
-#endif
   arp_table_entry_t entry = {ip, mac};
   arp_table[next_slot] = entry;
-  log_debug("added ip %x in arp table at slot %i", arp_table[next_slot].ip, next_slot)
+
+#ifdef ROUTING_DEBUG
+  log_debug("added ip %x in arp table at slot %i", ip, next_slot)
+#endif
 
   next_slot = (next_slot + 1) % MAX_ARP_TABLE_ENTRIES;
 }
@@ -58,21 +51,43 @@ add_arp_table_entry(mac_address_t mac, uint32_t ip) {
 void
 update_arp_table(mac_address_t mac, uint32_t ip) {
 #ifdef ROUTING_DEBUG
-  log_debug("Looking for ip %x in arp table", ip)
-  log_debug("Using MAC %s in arp table", mac_to_str(mac))
+  log_debug("Add ip %x with MAC %s to arp table", ip, mac_to_str(mac))
 #endif
+
+  uint32_t position = ip_in_arp_table(ip);
+  if (position != -1)
+    {
+      arp_table[position].mac = mac;
+#ifdef ROUTING_DEBUG
+      log_debug("updated ip %x in arp table", ip)
+#endif
+      return;
+    }
+
+  add_arp_table_entry(mac, ip);
+}
+
+uint32_t
+ip_in_arp_table(uint32_t ip)
+{
   for (uint32_t i = 0; i < MAX_ARP_TABLE_ENTRIES; i++)
     {
       arp_table_entry_t entry = arp_table[i];
-      log_debug("entry ip %x in arp table", entry.ip)
       if (entry.ip == ip)
         {
 #ifdef ROUTING_DEBUG
-          log_debug("updated ip %x in arp table", ip)
+          log_debug("ip %x found in arp table at %i", ip, i)
 #endif
-          entry.mac = mac;
-          return;
+          return i;
         }
     }
-  add_arp_table_entry(mac, ip);
+  return -1;
+}
+
+void
+initialize_routing()
+{
+  next_slot = 0;
+  size_t size = MAX_ARP_TABLE_ENTRIES * sizeof(arp_table_entry_t);
+  arp_table = (arp_table_entry_t *) malloc(size);
 }
