@@ -22,6 +22,7 @@
 #include "kernel/network/e1000.h"
 #include "kernel/logger/logger.h"
 #include "kernel/network/pdu_handler.h"
+#include "kernel/network/routing.h"
 
 #include <sys/types.h>
 #include <string.h>
@@ -37,6 +38,7 @@ static raw_packet_t send_packet_queue[MAX_PACKET_COUNT] = { 0 };
 void
 network_task_recv (void)
 {
+  initialize_routing();
   while(1)
     {
       if(new_packet_available())
@@ -79,11 +81,3 @@ new_packet_available (void)
 {
   return recv_queue_start != recv_queue_end;
 }
-
-
-
-
-
-
-
-

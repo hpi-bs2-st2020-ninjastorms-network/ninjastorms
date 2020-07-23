@@ -36,3 +36,5 @@ mac_address_t get_mac_for_ip(uint32_t ip);
 
 void add_arp_table_entry(mac_address_t mac, uint32_t ip);
 void update_arp_table(mac_address_t mac, uint32_t ip);
+void initialize_routing();
+uint32_t ip_in_arp_table(uint32_t ip);
