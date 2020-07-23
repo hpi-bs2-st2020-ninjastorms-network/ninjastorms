@@ -19,9 +19,11 @@
  ******************************************************************************/
 
 #include "kernel/logger/logger.h"
+#include "kernel/network/ethernet.h"
+#include "kernel/network/routing.h"
 
-static arp_table_entry_t arp_table[MAX_ARP_TABLE_ENTRIES];
 static uint32_t next_slot = 0;
+static arp_table_entry_t arp_table[MAX_ARP_TABLE_ENTRIES] = {0};
 
 mac_address_t
 get_mac_for_ip(uint32_t ip)
@@ -30,18 +32,47 @@ get_mac_for_ip(uint32_t ip)
     {
       arp_table_entry_t entry = arp_table[i];
       if (entry.ip == ip)
-        log_debug("arp table used for %x", ip)
-        return entry.mac;
+        {
+#ifdef ROUTING_DEBUG
+          log_debug("ip %x found in arp table", ip)
+#endif
+          return entry.mac;
+        }
     }
 
-  // no arp table entry
-  mac_address_t mac = 0; // send arp request
+  return NULL_MAC;
+}
 
-  arp_table_entry_t new_entry = { 0 };
-  new_entry.ip = ip;
-  new_entry.mac = mac;
-  arp_table[next_slot] = new_entry;
+void
+add_arp_table_entry(mac_address_t mac, uint32_t ip) {
+#ifdef ROUTING_DEBUG
+  log_debug("added ip %x in arp table", ip)
+#endif
+  arp_table_entry_t entry = {ip, mac};
+  arp_table[next_slot] = entry;
+  log_debug("added ip %x in arp table at slot %i", arp_table[next_slot].ip, next_slot)
+
   next_slot = (next_slot + 1) % MAX_ARP_TABLE_ENTRIES;
+}
 
-  return mac;
+void
+update_arp_table(mac_address_t mac, uint32_t ip) {
+#ifdef ROUTING_DEBUG
+  log_debug("Looking for ip %x in arp table", ip)
+  log_debug("Using MAC %s in arp table", mac_to_str(mac))
+#endif
+  for (uint32_t i = 0; i < MAX_ARP_TABLE_ENTRIES; i++)
+    {
+      arp_table_entry_t entry = arp_table[i];
+      log_debug("entry ip %x in arp table", entry.ip)
+      if (entry.ip == ip)
+        {
+#ifdef ROUTING_DEBUG
+          log_debug("updated ip %x in arp table", ip)
+#endif
+          entry.mac = mac;
+          return;
+        }
+    }
+  add_arp_table_entry(mac, ip);
 }
