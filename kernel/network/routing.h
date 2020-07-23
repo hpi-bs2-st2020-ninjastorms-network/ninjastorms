@@ -20,14 +20,19 @@
 
 #pragma once
 
-#include "kernel/network/ethernet.h
+#include "kernel/network/ethernet.h"
+
+#define ROUTING_DEBUG
 
 #define MAX_ARP_TABLE_ENTRIES 10
 
 struct __arp_table_entry {
   uint32_t ip;
   mac_address_t mac;
-}
+};
 typedef struct __arp_table_entry arp_table_entry_t;
 
 mac_address_t get_mac_for_ip(uint32_t ip);
+
+void add_arp_table_entry(mac_address_t mac, uint32_t ip);
+void update_arp_table(mac_address_t mac, uint32_t ip);

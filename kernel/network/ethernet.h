@@ -43,6 +43,8 @@ struct __ethernet_frame {
 } __attribute__((packed));
 typedef struct __ethernet_frame ethernet_frame_t;
 
+#define NULL_MAC      ((mac_address_t) {{0x00,0x00,0x00,0x00,0x00,0x00}})
+#define BROADCAST_MAC ((mac_address_t) {{0xff,0xff,0xff,0xff,0xff,0xff}})
 
 void send_ethernet (mac_address_t dest_mac, ether_type ether_type, void *payload, size_t len);
 const char *mac_to_str (mac_address_t mac);

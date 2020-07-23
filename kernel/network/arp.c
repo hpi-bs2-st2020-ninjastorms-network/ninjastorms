@@ -24,6 +24,7 @@
 #include "kernel/network/e1000.h"
 #include "kernel/network/ipv4.h"
 #include "kernel/network/network_io.h"
+#include "kernel/network/routing.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -82,13 +83,15 @@ arp_handle_request(arp_frame_t *frame)
       );
 
       send_ethernet(ntoh_mac(frame->src_hardware_addr), TYPE_ARP, &arp_frame, sizeof(arp_frame_t));
+
+      update_arp_table(frame->src_hardware_addr, frame->src_ip_address);
     }
 }
 
 void
 arp_handle_reply(arp_frame_t *frame)
 {
-  // Put response into arp table
+  update_arp_table(frame->src_hardware_addr, frame->src_ip_address);
 }
 
 arp_frame_t
