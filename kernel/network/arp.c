@@ -50,9 +50,11 @@ arp_receive(ethernet_frame_t *frame)
       return;
     }
 #ifdef ARP_DEBUG
-  log_debug("Found ARP packet.");
-  log_debug("Destination HW: %s", mac_to_str(ntoh_mac(arp_frame->dest_hardware_addr)));
-  log_debug("Source HW: %s", mac_to_str(ntoh_mac(arp_frame->src_hardware_addr)));
+  log_debug("Found ARP packet:")
+  log_debug("Source HW: %s", mac_to_str(ntoh_mac(arp_frame->src_hardware_addr)))
+  log_debug("Source IP: %x", ntohl(arp_frame->src_ip_address))
+  log_debug("Destination HW: %s", mac_to_str(ntoh_mac(arp_frame->dest_hardware_addr)))
+  log_debug("Destination IP: %x", ntohl(arp_frame->dest_ip_address))
 #endif
 
   switch(ntohs(arp_frame->opcode))
@@ -66,6 +68,20 @@ arp_receive(ethernet_frame_t *frame)
       default:
         break;
     }
+}
+
+void
+arp_send_request(uint32_t ip)
+{
+  arp_frame_t arp_frame = arp_build_frame(
+    ARP_REQUEST,
+    BROADCAST_MAC,
+    ip
+  );
+#ifdef ARP_DEBUG
+  log_debug("Sending arp request for ip %x", ip)
+#endif
+  send_ethernet(BROADCAST_MAC, TYPE_ARP, &arp_frame, sizeof(arp_frame_t));
 }
 
 void
@@ -91,7 +107,9 @@ arp_handle_request(arp_frame_t *frame)
 void
 arp_handle_reply(arp_frame_t *frame)
 {
-  update_arp_table(frame->src_hardware_addr, frame->src_ip_address);
+  uint32_t ip = ntohl(frame->src_ip_address);
+  mac_address_t mac = ntoh_mac(frame->src_hardware_addr);
+  update_arp_table(mac, ip);
 }
 
 arp_frame_t

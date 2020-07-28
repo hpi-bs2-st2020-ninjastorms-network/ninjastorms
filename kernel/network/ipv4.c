@@ -18,22 +18,18 @@
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.   *
  ******************************************************************************/
 
-#pragma once
-
 #include "kernel/network/ethernet.h"
+#include "kernel/network/routing.h"
+#include <sys/types.h>
 
-#define ROUTING_DEBUG
+void
+send_ipv4(uint32_t ip, void *payload, size_t len)
+{
+  // TODO: split payload into multiple packets
+  // TODO: timeout
+  mac_address_t dest_mac = get_mac_for_ip(ip, 1);
+  while(mac_address_equal(dest_mac, NULL_MAC))
+    dest_mac = get_mac_for_ip(ip, 0);
 
-#define MAX_ARP_TABLE_ENTRIES 10
-
-struct __arp_table_entry {
-  uint32_t ip;
-  mac_address_t mac;
-};
-typedef struct __arp_table_entry arp_table_entry_t;
-
-mac_address_t get_mac_for_ip(uint32_t ip, uint8_t send_request);
-void add_arp_table_entry(mac_address_t mac, uint32_t ip);
-void update_arp_table(mac_address_t mac, uint32_t ip);
-void initialize_routing();
-uint32_t ip_in_arp_table(uint32_t ip);
+  send_ethernet(dest_mac, TYPE_IPv4, payload, len);
+}

@@ -48,3 +48,4 @@ typedef struct __ethernet_frame ethernet_frame_t;
 
 void send_ethernet (mac_address_t dest_mac, ether_type ether_type, void *payload, size_t len);
 const char *mac_to_str (mac_address_t mac);
+uint8_t mac_address_equal(mac_address_t mac1, mac_address_t mac2);

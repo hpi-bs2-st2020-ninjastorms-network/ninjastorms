@@ -21,17 +21,20 @@
 #include "kernel/logger/logger.h"
 #include "kernel/network/ethernet.h"
 #include "kernel/network/routing.h"
+#include "kernel/network/arp.h"
 #include <stdlib.h>
 
 uint32_t next_slot;
 arp_table_entry_t *arp_table;
 
 mac_address_t
-get_mac_for_ip(uint32_t ip)
+get_mac_for_ip(uint32_t ip, uint8_t send_request)
 {
   uint32_t position = ip_in_arp_table(ip);
   if (position != -1)
-    return arp_table[position].mac;
+      return arp_table[position].mac;
+  else if(send_request)
+    arp_send_request(ip);
 
   return NULL_MAC;
 }
@@ -50,10 +53,6 @@ add_arp_table_entry(mac_address_t mac, uint32_t ip) {
 
 void
 update_arp_table(mac_address_t mac, uint32_t ip) {
-#ifdef ROUTING_DEBUG
-  log_debug("Add ip %x with MAC %s to arp table", ip, mac_to_str(mac))
-#endif
-
   uint32_t position = ip_in_arp_table(ip);
   if (position != -1)
     {
