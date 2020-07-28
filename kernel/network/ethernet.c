@@ -65,3 +65,14 @@ mac_to_str(mac_address_t mac)
     }
   return tmp;
 }
+
+uint8_t
+mac_address_equal(mac_address_t mac1, mac_address_t mac2)
+{
+  for(uint8_t i = 0; i < ETH_MAC_ADDRESS_LENGTH; i++)
+    {
+      if(mac1.address[i] != mac2.address[i])
+        return 0;
+    }
+  return 1;
+}

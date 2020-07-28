@@ -61,7 +61,7 @@ ninjastorms_SOURCES = \
     kernel/network/routing.c kernel/network/routing.h \
     kernel/network/ethernet.c kernel/network/ethernet.h \
     kernel/network/pdu_handler.c kernel/network/pdu_handler.h \
-    kernel/network/ipv4.h
+    kernel/network/ipv4.c kernel/network/ipv4.h
 
 ninjastorms_LDADD = libc/libc.la -lgcc
 ninjastorms_LDFLAGS = -T kernel/link-arm-eabi.ld -Ttext $(LOADADDR)
