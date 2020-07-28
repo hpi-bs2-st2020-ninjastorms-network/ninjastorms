@@ -46,7 +46,6 @@ write_command(uint16_t address, uint32_t value)
 uint32_t
 read_command(uint32_t address)
 {
-  
   return pci_read32(e1000->mem_base+address);
 }
 
@@ -65,7 +64,7 @@ detect_eeprom()
         e1000->eeprom_exists = 0;
     }
 #ifdef E1000_DEBUG
-  log_debug("eeprom exists: %x\n", e1000->eeprom_exists);
+  log_debug("eeprom exists: %x", e1000->eeprom_exists);
 #endif
 }
 
@@ -80,7 +79,9 @@ read_e1000_hardware_address()
         {
           e1000->mac.address[i] = pci_read8(mem_base_mac + i);
         }
-      printf("[E1000] MAC %s\n", mac_to_str(e1000->mac));
+#ifdef E1000_DEBUG
+      log_debug("MAC %s", mac_to_str(e1000->mac));
+#endif
     }
   else
     return 0;
@@ -207,7 +208,9 @@ receive_packet()
       uint8_t* buf = (uint8_t *) ((uint32_t) e1000->rx_descs[e1000->rx_cur].addr);
       uint16_t len = e1000->rx_descs[e1000->rx_cur].length;
 
-      // log_debug("received packet with length: %i", len)
+#ifdef E1000_DEBUG
+      log_debug("received packet with length: %i", len)
+#endif
 
       insert_packet(buf, len);
 
@@ -248,7 +251,7 @@ init_e1000(void)
   e1000->io_base = alloc_pci_memory(e1000->pci_device, 1);
   enable_bus_mastering(e1000->pci_device->config_base);
 #ifdef E1000_DEBUG
-  log_debug("membase: 0x%x iobase: 0x%x\n", e1000->mem_base, e1000->io_base);
+  log_debug("membase: 0x%x iobase: 0x%x", e1000->mem_base, e1000->io_base);
 #endif
   start_e1000();
 }
