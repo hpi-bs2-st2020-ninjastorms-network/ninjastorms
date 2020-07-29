@@ -28,7 +28,6 @@
 #include "kernel/pci/pci.h"
 #include "kernel/network/e1000.h"
 #include "kernel/network/network_task.h"
-#include "kernel/network/ipv4.h"
 
 #include "syscall.h"
 
@@ -102,16 +101,6 @@ syscall_test(void)
     create_process(&task_b);
 }
 
-static void
-network_test(void)
-{
-  uint32_t data = 0x1234;
-  size_t len = sizeof(uint32_t);
-  uint32_t dest_ip = 0x0A00020F;
-  send_ipv4(dest_ip, &data, len);
-  send_ipv4(dest_ip, &data, len);
-}
-
 char shuriken[] =
 "                 /\\\n"
 "                /  \\\n"
@@ -133,7 +122,6 @@ kernel_main (void)
   init_e1000();
 
   add_task(&network_task_recv);
-  add_task(&network_test);
   //add_task(&task_a);
   //add_task(&task_b);
   //add_task(&task_c);
