@@ -38,7 +38,7 @@ send_ethernet(mac_address_t dest_mac, ether_type eth_type, void *payload, size_t
     len = 46;
   ethernet_frame_t *eth_frame = (ethernet_frame_t *) malloc(sizeof(ethernet_frame_t) + len);
   eth_frame->dest_mac = hton_mac(dest_mac);
-  eth_frame->src_mac = my_mac(); // mac address is stored in big endian on nc, so no swap
+  eth_frame->src_mac = hton_mac(my_mac());
   eth_frame->ether_type = htons(eth_type);
   memcpy(eth_frame->payload, payload, len);
 
@@ -50,16 +50,11 @@ send_ethernet(mac_address_t dest_mac, ether_type eth_type, void *payload, size_t
 const char *
 mac_to_str(mac_address_t mac)
 {
-  // ab:cd:ef:gh:ij:kl
+  mac = hton_mac(mac); // convert mac to big endian for processing
   char *tmp = "00:11:22:33:44:55";
-  int i = 0;
 
-  tmp[0] = INTTOHEXCHAR(mac.address[0] >> 4);
-  tmp[1] = INTTOHEXCHAR(mac.address[0] & 0x0F);
-  for(int i = 1; i < 6; i++)
+  for(int i = 0, j = 0; i < 6; i++, j += 3)
     {
-      int j = i*3;
-      tmp[j-1] = ':';
       tmp[j] = INTTOHEXCHAR(mac.address[i] >> 4);
       tmp[j+1] = INTTOHEXCHAR(mac.address[i] & 0x0F);
     }

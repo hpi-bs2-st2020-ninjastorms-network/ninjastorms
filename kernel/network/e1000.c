@@ -28,8 +28,8 @@
 #include "kernel/network/network_task.h"
 #include "kernel/network/pdu_handler.h"
 #include "kernel/network/ethernet.h"
+#include "kernel/network/network_io.h"
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
 #include <string.h>
@@ -72,20 +72,19 @@ uint8_t
 read_e1000_hardware_address()
 { 
   uint32_t mem_base_mac = e1000->mem_base + MAC_OFFSET;
-  if(pci_read32(mem_base_mac) != 0)
+  uint64_t mac_data = pci_read64(mem_base_mac);
+  if(mac_data << 16 != 0)
     {
-      e1000->mac.address[0] = pci_read8(mem_base_mac);
-      for(uint16_t i = 1; i < 6; i++)
-        {
-          e1000->mac.address[i] = pci_read8(mem_base_mac + i);
-        }
+      mac_address_t mac_network;
+      memcpy(&mac_network, &mac_data, 6);
+      e1000->mac = ntoh_mac(mac_network);
 #ifdef E1000_DEBUG
-      log_debug("MAC %s", mac_to_str(e1000->mac));
+      log_debug("MAC: %s", mac_to_str(e1000->mac));
 #endif
+      return 1;
     }
   else
     return 0;
-  return 1;
 }
 
 mac_address_t
@@ -177,7 +176,7 @@ send_packet(const void *p_data, uint16_t p_len)
 {
   if(!is_e1000_available()) return -1;
 #ifdef E1000_DEBUG
-  log_debug("[E1000] Sending packet with len %i", p_len); 
+  log_debug("Sending packet with len %i", p_len); 
 #endif
   e1000_tx_desc_t *curr = &(e1000->tx_descs[e1000->tx_cur]);
   curr->addr = (uint32_t) p_data;
@@ -191,7 +190,7 @@ send_packet(const void *p_data, uint16_t p_len)
 
   while(!(curr->status));
 #ifdef E1000_DEBUG
-  log_debug("[E1000] Packet send!"); 
+  log_debug("Packet send!"); 
 #endif
   return 0;
 }
@@ -233,25 +232,33 @@ init_e1000(void)
   e1000 = (e1000_device_t*) malloc(sizeof(e1000_device_t));
   if(e1000 == NULL)
     {
-      printf("[E1000] No memory for e1000 struct left!\n");
+#ifdef E1000_DEBUG
+      log_warn("No memory for e1000 struct left!")
+#endif
       return;
     }
 
-  printf("[E1000] Initializing driver.\n");
+#ifdef E1000_DEBUG
+  log_debug("Initializing driver.")
+#endif
   e1000->pci_device = get_pci_device(INTEL_VEND, E1000_DEV);
   
   if(!is_e1000_available())
     {
-      printf("[E1000] Network card not found!\n");
+#ifdef E1000_DEBUG
+      log_warn("Network card not found!")
+#endif
       return;
     }
-  printf("[E1000] Network card found!\n");
+#ifdef E1000_DEBUG
+  log_debug("Network card found!")
+#endif
 
   e1000->mem_base = alloc_pci_memory(e1000->pci_device, 0);
   e1000->io_base = alloc_pci_memory(e1000->pci_device, 1);
   enable_bus_mastering(e1000->pci_device->config_base);
 #ifdef E1000_DEBUG
-  log_debug("membase: 0x%x iobase: 0x%x", e1000->mem_base, e1000->io_base);
+  log_debug("membase: 0x%x iobase: 0x%x", e1000->mem_base, e1000->io_base)
 #endif
   start_e1000();
 }

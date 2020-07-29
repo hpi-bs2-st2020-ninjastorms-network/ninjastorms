@@ -31,10 +31,6 @@ static int recv_queue_start  = 0;
 static int recv_queue_end    = 0;
 static raw_packet_t recv_packet_queue[MAX_PACKET_COUNT] = { 0 };
 
-static int send_queue_start  = 0;
-static int send_queue_end    = 0;
-static raw_packet_t send_packet_queue[MAX_PACKET_COUNT] = { 0 };
-
 void
 network_task_recv (void)
 {
