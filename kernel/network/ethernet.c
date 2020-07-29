@@ -31,16 +31,27 @@
 #define INTTOHEXCHAR(val) ((val) > 9 ? (val)+'a'-10 : (val) + '0')
 
 void
-send_ethernet(mac_address_t dest_mac, ether_type eth_type, void *payload, size_t len)
+send_ethernet(mac_address_t dest_mac, ether_type eth_type, void *payload, size_t len_payload)
 {
   // make sure ethernet frame is at least 60 bytes long
-  if (len < 46)
-    len = 46;
+  uint8_t len_padding = len_payload < MINIMUM_PAYLOAD_LENGTH ? MINIMUM_PAYLOAD_LENGTH - len_payload : 0;
+  uint32_t len = len_padding + len_payload;
   ethernet_frame_t *eth_frame = (ethernet_frame_t *) malloc(sizeof(ethernet_frame_t) + len);
   eth_frame->dest_mac = hton_mac(dest_mac);
   eth_frame->src_mac = hton_mac(my_mac());
   eth_frame->ether_type = htons(eth_type);
   memcpy(eth_frame->payload, payload, len);
+
+#ifdef ETHERNET_DEBUG
+  log_debug("Payload is %i, adding %i padding", len_payload, len_padding);
+#endif
+  if(len_padding != 0)
+    {
+      uint8_t padding[len_padding];
+      for(uint8_t i = 0; i < len_padding; i++)
+        padding[i] = 0x00;
+      memcpy(eth_frame->payload + len_payload, padding, len_padding);
+    }
 
   send_packet(eth_frame, sizeof(ethernet_frame_t) + len);
 
