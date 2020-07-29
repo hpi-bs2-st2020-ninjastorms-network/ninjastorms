@@ -32,8 +32,9 @@ struct __arp_table_entry {
 };
 typedef struct __arp_table_entry arp_table_entry_t;
 
-mac_address_t get_mac_for_ip(uint32_t ip, uint8_t send_request);
+mac_address_t arp_table_lookup(uint32_t ip);
+mac_address_t arp_get_mac(uint32_t ip);
 void add_arp_table_entry(mac_address_t mac, uint32_t ip);
 void update_arp_table(mac_address_t mac, uint32_t ip);
 void initialize_routing();
-uint32_t ip_in_arp_table(uint32_t ip);
+uint32_t arp_table_find(uint32_t ip);

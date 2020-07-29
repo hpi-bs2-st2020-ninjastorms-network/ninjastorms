@@ -29,15 +29,24 @@ uint32_t next_slot;
 arp_table_entry_t *arp_table;
 
 mac_address_t
-get_mac_for_ip(uint32_t ip, uint8_t send_request)
+arp_table_lookup(uint32_t ip)
 {
-  uint32_t position = ip_in_arp_table(ip);
+  uint32_t position = arp_table_find(ip);
   if (position != -1)
-      return arp_table[position].mac;
-  else if(send_request)
-    arp_send_request(ip);
+    return arp_table[position].mac;
+  else
+    return NULL_MAC;
+}
 
-  return NULL_MAC;
+mac_address_t
+arp_get_mac(uint32_t ip)
+{
+  uint32_t position = arp_table_find(ip);
+  if (position != -1)
+    return arp_table[position].mac;
+  else
+    arp_send_request(ip);
+    return NULL_MAC;
 }
 
 void
@@ -54,7 +63,7 @@ add_arp_table_entry(mac_address_t mac, uint32_t ip) {
 
 void
 update_arp_table(mac_address_t mac, uint32_t ip) {
-  uint32_t position = ip_in_arp_table(ip);
+  uint32_t position = arp_table_find(ip);
   if (position != -1)
     {
       arp_table[position].mac = mac;
@@ -68,7 +77,7 @@ update_arp_table(mac_address_t mac, uint32_t ip) {
 }
 
 uint32_t
-ip_in_arp_table(uint32_t ip)
+arp_table_find(uint32_t ip)
 {
   for (uint32_t i = 0; i < MAX_ARP_TABLE_ENTRIES; i++)
     {
