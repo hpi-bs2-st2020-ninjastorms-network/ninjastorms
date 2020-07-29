@@ -75,7 +75,7 @@ arp_send_request(uint32_t ip)
 {
   arp_frame_t arp_frame = arp_build_frame(
     ARP_REQUEST,
-    BROADCAST_MAC,
+    NULL_MAC,
     ip
   );
 #ifdef ARP_DEBUG
@@ -115,16 +115,19 @@ arp_handle_reply(arp_frame_t *frame)
 arp_frame_t
 arp_build_frame(uint16_t opcode, mac_address_t dest_hw, uint32_t dest_ip)
 {
-  arp_frame_t frame;
-  frame.hardware_type = htons(HTYPE_ETHERNET);
-  frame.protocol_type = htons(TYPE_IPv4);
-  frame.hardware_addr_len = ETH_MAC_ADDRESS_LENGTH;
-  frame.protocol_addr_len = IPV4_ADDR_LEN;
-  frame.opcode = htons(opcode);
+  arp_frame_t frame =
+    {
+      .hardware_type = htons(HTYPE_ETHERNET),
+      .protocol_type = htons(TYPE_IPv4),
+      .hardware_addr_len = ETH_MAC_ADDRESS_LENGTH,
+      .protocol_addr_len = IPV4_ADDR_LEN,
+      .opcode = htons(opcode),
 
-  frame.src_hardware_addr = hton_mac(my_mac());
-  frame.src_ip_address = htonl(OWN_IPV4_ADDR);
-  frame.dest_hardware_addr = hton_mac(dest_hw);
-  frame.dest_ip_address = htonl(dest_ip);
+      .src_hardware_addr = hton_mac(my_mac()),
+      .src_ip_address = htonl(OWN_IPV4_ADDR),
+      .dest_hardware_addr = hton_mac(dest_hw),
+      .dest_ip_address = htonl(dest_ip)
+    };
+
   return frame;
 }

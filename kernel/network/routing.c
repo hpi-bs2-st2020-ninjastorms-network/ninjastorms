@@ -18,10 +18,11 @@
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.   *
  ******************************************************************************/
 
+#include "routing.h"
 #include "kernel/logger/logger.h"
 #include "kernel/network/ethernet.h"
-#include "kernel/network/routing.h"
 #include "kernel/network/arp.h"
+
 #include <stdlib.h>
 
 uint32_t next_slot;
