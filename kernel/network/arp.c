@@ -100,7 +100,7 @@ arp_handle_request(arp_frame_t *frame)
 
       send_ethernet(ntoh_mac(frame->src_hardware_addr), TYPE_ARP, &arp_frame, sizeof(arp_frame_t));
 
-      update_arp_table(frame->src_hardware_addr, frame->src_ip_address);
+      update_arp_table(ntoh_mac(frame->src_hardware_addr), ntohl(frame->src_ip_address));
     }
 }
 
