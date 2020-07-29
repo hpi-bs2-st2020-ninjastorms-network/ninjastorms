@@ -27,9 +27,9 @@ send_ipv4(uint32_t ip, void *payload, size_t len)
 {
   // TODO: split payload into multiple packets
   // TODO: timeout
-  mac_address_t dest_mac = get_mac_for_ip(ip, 1);
+  mac_address_t dest_mac = arp_get_mac(ip);
   while(mac_address_equal(dest_mac, NULL_MAC))
-    dest_mac = get_mac_for_ip(ip, 0);
+    dest_mac = arp_table_lookup(ip);
 
   send_ethernet(dest_mac, TYPE_IPv4, payload, len);
 }
