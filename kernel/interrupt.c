@@ -22,6 +22,7 @@
 #include "syscall_handler.h"
 
 #include "kernel/memory.h"
+#include "kernel/time.h"
 #include "kernel/interrupt_handler.h"
 
 #include "kernel/mmio.h"
@@ -76,6 +77,8 @@ handle_interrupt (void)
     irq_handler_e1000();
   if(status & TIMER1_INTBIT)
     irq_handler_timer();
+  if(status & TIMER3_INTBIT)
+    irq_handler_time_inc();
 }
 
 void

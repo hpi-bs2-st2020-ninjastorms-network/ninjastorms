@@ -20,35 +20,13 @@
 
 #pragma once
 
-#include <sys/types.h>
-#include "ethernet.h"
+// value calculated according to https://documentation-service.arm.com/static/5e8e2102fd977155116a4aef?token=
+// assuming 1MHz clock frequency
+#  define TIMER_SECOND_INTERVAL 0xf4240
+#  define TIMER_MILLIS_INTERVAL 0x3e8
 
-// DEBUG LEVEL
-//#define ARP_DEBUG
-
-// OPCODES
-#define ARP_REQUEST 0x0001
-#define ARP_REPLY 0x0002
-
-// HARDWARE TYPE
-#define HTYPE_ETHERNET 1
-
-// https://wiki.osdev.org/ARP
-struct arp_frame {
-  uint16_t hardware_type;
-  uint16_t protocol_type;
-  uint8_t hardware_addr_len;  // ethernet = 6
-  uint8_t protocol_addr_len;  // ipv4 = 4
-  uint16_t opcode; // ARP OP Code: see above
-  mac_address_t src_hardware_addr;
-  uint32_t src_ip_address;
-  mac_address_t dest_hardware_addr;
-  uint32_t dest_ip_address;
-} __attribute__((packed));
-typedef struct arp_frame arp_frame_t;
-
-void arp_receive(ethernet_frame_t *frame);
-void arp_handle_request(arp_frame_t *frame);
-void arp_handle_reply(arp_frame_t *frame);
-void arp_send_request(uint32_t ip);
-arp_frame_t arp_build_frame(uint16_t opcode, mac_address_t dest_hw, uint32_t dest_ip);
+void irq_handler_time_inc();
+void init_time();
+uint64_t millis_since_start();
+uint64_t seconds_since_start();
+uint64_t minutes_since_start();

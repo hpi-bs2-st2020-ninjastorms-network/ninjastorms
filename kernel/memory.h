@@ -58,6 +58,15 @@
 #  define TIMER1_RIS    (volatile char*)(TIMER1_BASE+0x10)
 #  define TIMER1_MIS    (volatile char*)(TIMER1_BASE+0x14)
 
+#  define TIMER3_BASE 0x101E3000
+#  define TIMER3_INTCLR_ASM 0x101E300C
+#  define TIMER3_LOAD   (volatile unsigned int*)(TIMER3_BASE+0x0)
+#  define TIMER3_VALUE  (volatile unsigned int*)(TIMER3_BASE+0x4)
+#  define TIMER3_CTRL   (volatile char*)(TIMER3_BASE+0x08)
+#  define TIMER3_INTCLR (volatile char*)(TIMER3_BASE+0x0C)
+#  define TIMER3_RIS    (volatile char*)(TIMER3_BASE+0x10)
+#  define TIMER3_MIS    (volatile char*)(TIMER3_BASE+0x14)
+
 // Primary Interrupt Controller (PL190)
 // https://developer.arm.com/documentation/dui0224/i/programmer-s-reference/interrupt-controllers/primary-interrupt-controller
 #  define PIC_BASE 0x10140000
@@ -71,6 +80,9 @@
 #  define PIC_SOFT_INT_CLEAR    (volatile unsigned int*)(PIC_BASE+0x1C)
 
 #  define TIMER1_INTBIT (1 << 4)
+#  define TIMER2_INTBIT (1 << 4)
+#  define TIMER3_INTBIT (1 << 5)
+#  define TIMER4_INTBIT (1 << 5)
 
 #  define PCI0_INTBIT (1 << 27)
 #  define PCI1_INTBIT (1 << 28)

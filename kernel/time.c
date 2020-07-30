@@ -18,37 +18,66 @@
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.   *
  ******************************************************************************/
 
-#pragma once
-
+#include "time.h"
+#include "kernel/memory.h"
 #include <sys/types.h>
-#include "ethernet.h"
+#include <stdio.h>
 
-// DEBUG LEVEL
-//#define ARP_DEBUG
+static uint64_t ticks_since_start = 0;
 
-// OPCODES
-#define ARP_REQUEST 0x0001
-#define ARP_REPLY 0x0002
+void
+time_start(unsigned int period)
+{
+#if BOARD_VERSATILEPB
+  *TIMER3_CTRL &= ~(1 << 7);   // disable timer
+  *TIMER3_CTRL |= 1 << 6;      // set periodic-mode
+  *TIMER3_INTCLR = (char)0x1;  // clear interrupts
+  *TIMER3_CTRL |= 1 << 5;      // set IntEnable
+  *TIMER3_CTRL |= 1 << 1;      // set 32-bit mode
+  *TIMER3_CTRL &= ~(1 << 0);   // set Wrapping-Mode
+  *TIMER3_LOAD  = period;      // set timer period
+  *TIMER3_CTRL |= 1 << 7;      // start timer
+#endif
+}
 
-// HARDWARE TYPE
-#define HTYPE_ETHERNET 1
+void
+time_stop(void)
+{
+#if BOARD_VERSATILEPB
+  *TIMER3_CTRL &= ~(1 << 7);        // disable timer
+  *TIMER3_INTCLR = (char)0x1;       // clear interrupts
+#endif
+}
 
-// https://wiki.osdev.org/ARP
-struct arp_frame {
-  uint16_t hardware_type;
-  uint16_t protocol_type;
-  uint8_t hardware_addr_len;  // ethernet = 6
-  uint8_t protocol_addr_len;  // ipv4 = 4
-  uint16_t opcode; // ARP OP Code: see above
-  mac_address_t src_hardware_addr;
-  uint32_t src_ip_address;
-  mac_address_t dest_hardware_addr;
-  uint32_t dest_ip_address;
-} __attribute__((packed));
-typedef struct arp_frame arp_frame_t;
+void
+irq_handler_time_inc()
+{
+  ticks_since_start++;
+  *TIMER3_INTCLR = 1;
+}
 
-void arp_receive(ethernet_frame_t *frame);
-void arp_handle_request(arp_frame_t *frame);
-void arp_handle_reply(arp_frame_t *frame);
-void arp_send_request(uint32_t ip);
-arp_frame_t arp_build_frame(uint16_t opcode, mac_address_t dest_hw, uint32_t dest_ip);
+void
+init_time()
+{
+  *PIC_INT_ENABLE |= TIMER3_INTBIT;  // unmask interrupt bit for timer3
+  time_stop();
+  time_start(TIMER_MILLIS_INTERVAL);
+}
+
+uint64_t
+millis_since_start()
+{
+  return ticks_since_start;
+}
+
+uint64_t
+seconds_since_start()
+{
+  return ticks_since_start / 1000;
+}
+
+uint64_t
+minutes_since_start()
+{
+  return ticks_since_start / (1000 * 60);
+}
