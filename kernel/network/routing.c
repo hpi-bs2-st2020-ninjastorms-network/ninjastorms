@@ -19,13 +19,13 @@
  ******************************************************************************/
 
 #include "routing.h"
+#include "kernel/time.h"
 #include "kernel/logger/logger.h"
 #include "kernel/network/ethernet.h"
 #include "kernel/network/arp.h"
 
 #include <stdlib.h>
 
-uint32_t next_slot;
 arp_table_entry_t *arp_table;
 
 mac_address_t
@@ -53,14 +53,25 @@ arp_get_mac(uint32_t ip)
 
 void
 add_arp_table_entry(mac_address_t mac, uint32_t ip) {
-  arp_table_entry_t entry = {ip, mac};
-  arp_table[next_slot] = entry;
+  uint32_t slot = 0;
+
+  // find next free slot, if not existing overwrite oldest
+  for(uint32_t i = 0; i < MAX_ARP_TABLE_ENTRIES; i++)
+    {
+      if(!arp_table[i].entry_time)
+        {
+          slot = i;
+          break;
+        }
+      else if(arp_table[i].entry_time < arp_table[slot].entry_time)
+        slot = i;
+    }
+
+  arp_table[slot] = (arp_table_entry_t) {ip, mac, clock_seconds()};
 
 #ifdef ROUTING_DEBUG
-  log_debug("added ip %x in arp table at slot %i", ip, next_slot)
+  log_debug("added ip %x in arp table at slot %i with time %i", ip, slot, (uint32_t)arp_table[slot].entry_time)
 #endif
-
-  next_slot = (next_slot + 1) % MAX_ARP_TABLE_ENTRIES;
 }
 
 void
@@ -81,24 +92,33 @@ update_arp_table(mac_address_t mac, uint32_t ip) {
 uint32_t
 arp_table_find(uint32_t ip)
 {
+  uint32_t res = -1;
   for (uint32_t i = 0; i < MAX_ARP_TABLE_ENTRIES; i++)
     {
       arp_table_entry_t entry = arp_table[i];
-      if (entry.ip == ip)
+      if (entry.entry_time && clock_seconds() - entry.entry_time > MAX_ARP_TABLE_AGE)
         {
+          // entry is too old, make it invalid
 #ifdef ROUTING_DEBUG
-          log_debug("ip %x found in arp table at %i", ip, i)
+          log_debug("entry at %i is too old with time %i", i, (uint32_t)arp_table[i].entry_time);
 #endif
-          return i;
+          arp_table[i] = NULL_ENTRY;
+        }
+      else if (entry.ip == ip)
+        {
+          res = i;
+          arp_table[i].entry_time = clock_seconds();
+#ifdef ROUTING_DEBUG
+          log_debug("ip %x found in arp table at %i new time %i", ip, i, (uint32_t)arp_table[i].entry_time)
+#endif
         }
     }
-  return -1;
+  return res;
 }
 
 void
 initialize_routing()
 {
-  next_slot = 0;
   size_t size = MAX_ARP_TABLE_ENTRIES * sizeof(arp_table_entry_t);
   arp_table = (arp_table_entry_t *) malloc(size);
 }

@@ -21,14 +21,19 @@
 #pragma once
 
 #include "kernel/network/ethernet.h"
+#include "kernel/time.h"
 
 #define ROUTING_DEBUG
 
 #define MAX_ARP_TABLE_ENTRIES 10
+#define MAX_ARP_TABLE_AGE 5 // seconds
+
+#define NULL_ENTRY (arp_table_entry_t){0, {0}, 0}
 
 struct __arp_table_entry {
   uint32_t ip;
   mac_address_t mac;
+  clock_t entry_time;
 };
 typedef struct __arp_table_entry arp_table_entry_t;
 

@@ -19,9 +19,14 @@
  ******************************************************************************/
 
 #pragma once
+#include <sys/types.h>
+
+//#define IPV4_DEBUG
 
 #define IPV4_ADDR_LEN 4
 
 #define OWN_IPV4_ADDR 0x0A00020A // 10.0.2.10
 
-void send_ipv4(uint32_t ip, void *payload, size_t len);
+#define WAIT_ON_ARP_TIMEOUT 5 //seconds
+
+uint32_t send_ipv4(uint32_t ip, void *payload, size_t len);

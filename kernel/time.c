@@ -23,10 +23,10 @@
 #include <sys/types.h>
 #include <stdio.h>
 
-static uint64_t ticks_since_start = 0;
+static clock_t clock = 0;
 
 void
-time_start(unsigned int period)
+clock_start(unsigned int period)
 {
 #if BOARD_VERSATILEPB
   *TIMER3_CTRL &= ~(1 << 7);   // disable timer
@@ -41,7 +41,7 @@ time_start(unsigned int period)
 }
 
 void
-time_stop(void)
+clock_stop(void)
 {
 #if BOARD_VERSATILEPB
   *TIMER3_CTRL &= ~(1 << 7);        // disable timer
@@ -50,34 +50,33 @@ time_stop(void)
 }
 
 void
-irq_handler_time_inc()
+irq_handler_clock()
 {
-  ticks_since_start++;
+  clock++;
   *TIMER3_INTCLR = 1;
 }
 
 void
 init_time()
 {
-  *PIC_INT_ENABLE |= TIMER3_INTBIT;  // unmask interrupt bit for timer3
-  time_stop();
-  time_start(TIMER_MILLIS_INTERVAL);
+  clock_stop();
+  clock_start(TIMER_MILLIS_INTERVAL);
 }
 
-uint64_t
-millis_since_start()
+clock_t
+clock_millis()
 {
-  return ticks_since_start;
+  return clock;
 }
 
-uint64_t
-seconds_since_start()
+clock_t
+clock_seconds()
 {
-  return ticks_since_start / 1000;
+  return clock / 1000;
 }
 
-uint64_t
-minutes_since_start()
+clock_t
+clock_minutes()
 {
-  return ticks_since_start / (1000 * 60);
+  return clock / (1000 * 60);
 }

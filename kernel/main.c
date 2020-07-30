@@ -24,7 +24,6 @@
 #include "kernel/drivers/button.h"
 #include "kernel/scheduler.h"
 #include "kernel/time.h"
-#include "kernel/interrupt.h"
 #include "memory.h"
 #include "kernel/utilities.h"
 #include "kernel/pci/pci.h"
@@ -114,8 +113,6 @@ char shuriken[] =
 int
 kernel_main (void)
 {
-  init_interrupt_handling();
-  init_time();
   puts("This is ninjastorms OS");
   puts("  shuriken ready");
   puts(shuriken);
@@ -124,6 +121,7 @@ kernel_main (void)
 
   pci_init();
   init_e1000();
+  init_time();
 
   add_task(&network_task_recv);
   //add_task(&task_a);

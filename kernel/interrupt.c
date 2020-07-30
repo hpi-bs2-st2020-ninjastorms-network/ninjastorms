@@ -78,7 +78,7 @@ handle_interrupt (void)
   if(status & TIMER1_INTBIT)
     irq_handler_timer();
   if(status & TIMER3_INTBIT)
-    irq_handler_time_inc();
+    irq_handler_clock();
 }
 
 void
@@ -101,7 +101,8 @@ void
 init_timer_interrupt (void)
 {
     #if BOARD_VERSATILEPB
-    *PIC_INT_ENABLE |= TIMER1_INTBIT;  // unmask interrupt bit for timer1  
+    *PIC_INT_ENABLE |= TIMER1_INTBIT;  // unmask interrupt bit for timer1
+    *PIC_INT_ENABLE |= TIMER3_INTBIT;  // unmask interrupt bit for timer3
     #endif
     
     #if BOARD_EV3
