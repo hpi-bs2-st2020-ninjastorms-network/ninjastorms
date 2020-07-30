@@ -41,12 +41,14 @@ arp_table_lookup(uint32_t ip)
 mac_address_t
 arp_get_mac(uint32_t ip)
 {
-  uint32_t position = arp_table_find(ip);
-  if (position != -1)
-    return arp_table[position].mac;
+  mac_address_t mac = arp_table_lookup(ip);
+  if (mac_address_equal(NULL_MAC, mac))
+    {
+      arp_send_request(ip);
+      return NULL_MAC;
+    }
   else
-    arp_send_request(ip);
-    return NULL_MAC;
+    return mac;
 }
 
 void

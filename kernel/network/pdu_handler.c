@@ -43,9 +43,3 @@ start_pdu_encapsulation(raw_packet_t *buf)
         break;
     }
 }
-
-void
-capsulate_ethernet_frame(ethernet_frame_t *frame) 
-{
-
-}

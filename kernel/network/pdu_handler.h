@@ -26,4 +26,3 @@
 
 // takes raw input from driver and starts encapsulation
 void start_pdu_encapsulation (raw_packet_t* buf);
-void capsulate_ethernet_frame(ethernet_frame_t *frame);

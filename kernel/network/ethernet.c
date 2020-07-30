@@ -47,9 +47,7 @@ send_ethernet(mac_address_t dest_mac, ether_type eth_type, void *payload, size_t
 #endif
   if(len_padding != 0)
     {
-      uint8_t padding[len_padding];
-      for(uint8_t i = 0; i < len_padding; i++)
-        padding[i] = 0x00;
+      uint8_t padding[MINIMUM_PAYLOAD_LENGTH] = {0};
       memcpy(eth_frame->payload + len_payload, padding, len_padding);
     }
 

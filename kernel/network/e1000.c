@@ -68,7 +68,7 @@ detect_eeprom()
 #endif
 }
 
-uint8_t
+void
 read_e1000_hardware_address()
 { 
   uint32_t mem_base_mac = e1000->mem_base + MAC_OFFSET;
@@ -81,10 +81,7 @@ read_e1000_hardware_address()
 #ifdef E1000_DEBUG
       log_debug("MAC: %s", mac_to_str(e1000->mac));
 #endif
-      return 1;
     }
-  else
-    return 0;
 }
 
 mac_address_t
