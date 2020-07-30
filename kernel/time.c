@@ -23,6 +23,8 @@
 #include <sys/types.h>
 #include <stdio.h>
 
+#define INTTOCHAR(val) ((val) + '0')
+
 static clock_t clock = 0;
 
 void
@@ -79,4 +81,25 @@ clock_t
 clock_minutes()
 {
   return clock / (1000 * 60);
+}
+
+clock_t
+clock_hours()
+{
+  return clock / (1000 * 60 * 60);
+}
+
+const char *
+clock_formatted_msms()
+{
+  uint64_t mils = clock_millis(), secs = mils/1000, mins = mils/60000;
+  char *format = "mm:ss:lll"; // minutes:seconds:millis
+  format[0] = INTTOCHAR((mins/10)%10);
+  format[1] = INTTOCHAR(mins%10);
+  format[3] = INTTOCHAR((secs/10)%10);
+  format[4] = INTTOCHAR(secs%10);
+  format[6] = INTTOCHAR((mils/100)%10);
+  format[7] = INTTOCHAR((mils/10)%10);
+  format[8] = INTTOCHAR(mils%10);
+  return format;
 }
