@@ -34,6 +34,7 @@ noinst_PROGRAMS = ninjastorms
 ninjastorms_SOURCES = \
     kernel/boot/start.S \
     kernel/main.c kernel/main.h \
+    kernel/time.c kernel/time.h \
     kernel/scheduler.c kernel/scheduler.h \
     kernel/interrupt.c kernel/interrupt.h \
     kernel/syscall_handler.c kernel/syscall_handler.h \
