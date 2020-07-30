@@ -34,3 +34,5 @@ void init_time();
 clock_t clock_millis();
 clock_t clock_seconds();
 clock_t clock_minutes();
+clock_t clock_hours();
+const char * clock_formatted_msms();
