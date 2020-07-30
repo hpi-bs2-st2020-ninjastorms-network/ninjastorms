@@ -22,11 +22,15 @@
 
 // value calculated according to https://documentation-service.arm.com/static/5e8e2102fd977155116a4aef?token=
 // assuming 1MHz clock frequency
-#  define TIMER_SECOND_INTERVAL 0xf4240
-#  define TIMER_MILLIS_INTERVAL 0x3e8
+#define TIMER_SECOND_INTERVAL 0xf4240
+#define TIMER_MILLIS_INTERVAL 0x3e8
 
-void irq_handler_time_inc();
+typedef unsigned long long clock_t;
+
+void irq_handler_clock();
 void init_time();
-uint64_t millis_since_start();
-uint64_t seconds_since_start();
-uint64_t minutes_since_start();
+
+// clock is time since system start
+clock_t clock_millis();
+clock_t clock_seconds();
+clock_t clock_minutes();

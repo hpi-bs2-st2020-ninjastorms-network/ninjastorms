@@ -18,18 +18,31 @@
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.   *
  ******************************************************************************/
 
+#include "ipv4.h"
+#include "kernel/time.h"
 #include "kernel/network/ethernet.h"
 #include "kernel/network/routing.h"
+#include "kernel/logger/logger.h"
 #include <sys/types.h>
 
-void
+uint32_t
 send_ipv4(uint32_t ip, void *payload, size_t len)
 {
-  // TODO: split payload into multiple packets
-  // TODO: timeout
+  // TODO: implement protocol
   mac_address_t dest_mac = arp_get_mac(ip);
+  uint64_t start = clock_seconds();
   while(mac_address_equal(dest_mac, NULL_MAC))
-    dest_mac = arp_table_lookup(ip);
+    {
+      dest_mac = arp_table_lookup(ip);
+      if(clock_seconds() - start > WAIT_ON_ARP_TIMEOUT)
+        {
+#ifdef IPV4_DEBUG
+          log_debug("Sending to IP %x timed out waiting for arp", ip)
+#endif
+          return -1;
+        }
+    }
 
   send_ethernet(dest_mac, TYPE_IPv4, payload, len);
+  return 0;
 }
