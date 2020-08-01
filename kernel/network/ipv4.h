@@ -22,7 +22,7 @@
 
 #include <sys/types.h>
 
-#define IPV4_DEBUG
+// #define IPV4_DEBUG
 
 #define IPV4_ADDR_LEN 4
 #define OWN_IPV4_ADDR 0x0A00020A // 10.0.2.10
