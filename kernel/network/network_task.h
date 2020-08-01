@@ -34,5 +34,3 @@ typedef struct raw_packet raw_packet_t;
 
 void network_task_recv (void);
 void insert_packet (uint8_t *data, size_t len);
-raw_packet_t* remove_packet (void);
-uint8_t new_packet_available (void);

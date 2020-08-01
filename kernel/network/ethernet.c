@@ -31,6 +31,10 @@
 
 #define INTTOHEXCHAR(val) ((val) > 9 ? (val)+'a'-10 : (val) + '0')
 
+/*
+ * Wraps the payload of length len_payload into an ethernet frame.
+ * Adds 0-padding if necessary and hands the packet to the network card.
+ */
 void
 ethernet_send(mac_address_t dest_mac, ether_type eth_type, void *payload, size_t len_payload)
 {
@@ -48,8 +52,7 @@ ethernet_send(mac_address_t dest_mac, ether_type eth_type, void *payload, size_t
 #endif
   if(len_padding != 0)
     {
-      uint8_t padding[MINIMUM_PAYLOAD_LENGTH] = {0};
-      memcpy(eth_frame->payload + len_payload, padding, len_padding);
+      memset(eth_frame->payload + len_payload, 0, len_padding);
     }
 
   e1000_send_packet(eth_frame, sizeof(ethernet_frame_t) + len);
