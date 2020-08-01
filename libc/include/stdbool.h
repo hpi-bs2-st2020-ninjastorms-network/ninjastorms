@@ -20,26 +20,13 @@
 
 #pragma once
 
-#include "kernel/network/ethernet.h"
-#include "kernel/time.h"
+/*
+ * Our subset of stdbool.h
+ */
 
-#include <stdbool.h>
+// _Bool defined by compiler
 
-// #define ROUTING_DEBUG
-
-#define MAX_ARP_TABLE_ENTRIES 	10
-#define MAX_ARP_TABLE_AGE 		300 // seconds
-
-#define ARP_NULL_ENTRY (arp_table_entry_t){0, {0}, 0}
-
-typedef struct {
-  uint32_t ip;
-  mac_address_t mac;
-  clock_t entry_time;
-} arp_table_entry_t;
-
-mac_address_t arp_table_lookup(uint32_t ip);
-mac_address_t arp_table_get_mac(uint32_t ip);
-bool arp_table_update(mac_address_t mac, uint32_t ip);
-void arp_table_add_entry(mac_address_t mac, uint32_t ip);
-void routing_init();
+#define bool _Bool
+#define false 0
+#define true  1
+#define __bool_true_false_are_defined

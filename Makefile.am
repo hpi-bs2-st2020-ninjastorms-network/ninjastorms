@@ -25,6 +25,7 @@ libc_libc_la_SOURCES = \
     libc/include/stddef.h \
     libc/include/stdio.h \
     libhc/include/stdlib.h \
+    libhc/include/stdbool.h \
     libc/include/string.h \
     libc/include/sys/types.h \
     libc/include/unistd.h
