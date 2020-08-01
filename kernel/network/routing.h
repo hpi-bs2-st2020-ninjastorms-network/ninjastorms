@@ -23,7 +23,7 @@
 #include "kernel/network/ethernet.h"
 #include "kernel/time.h"
 
-#define ROUTING_DEBUG
+//#define ROUTING_DEBUG
 
 #define MAX_ARP_TABLE_ENTRIES 10
 #define MAX_ARP_TABLE_AGE 5 // seconds
