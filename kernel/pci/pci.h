@@ -22,7 +22,7 @@
 
 #include <sys/types.h>
 
-//#define PCI_DEBUG
+#define PCI_DEBUG
 
 #define PCI_SELF_CONFIG 0x41000000
 #define PCI_CONFIG 0x42000000
@@ -85,22 +85,17 @@
 
 #define PCI_INVALID_VENDOR 0xFFFF
 
-struct __pci_device_t {
+typedef struct {
   uint32_t config_base;
   uint32_t mem_base;
   uint32_t io_base;
   uint8_t pci_slot_id;
   uint16_t vendor_id;
   uint16_t device_id;
-};
-typedef struct __pci_device_t pci_device_t;
+} pci_device_t;
 
 
-void enable_bus_mastering(uint32_t address);
-uint8_t get_bar_type(uint32_t base, uint8_t number);
-uint32_t get_bar_size(uint32_t base, uint8_t number);
-uint32_t alloc_pci_memory(pci_device_t* device, uint8_t bar);
-void enumerate_pci_devices(void);
-int32_t board_configuration(void);
-pci_device_t* get_pci_device(uint16_t vendor_id, uint16_t device_id);
+void pci_enable_bus_mastering(uint32_t address);
+uint32_t pci_alloc_memory(pci_device_t* device, uint8_t bar);
+pci_device_t* pci_get_device(uint16_t vendor_id, uint16_t device_id);
 void pci_init(void);

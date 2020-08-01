@@ -34,7 +34,6 @@
 #include <stddef.h>
 #include <string.h>
 
-// get some memory for our e1000
 e1000_device_t* e1000;
 
 void
@@ -85,7 +84,7 @@ read_e1000_hardware_address()
 }
 
 mac_address_t
-my_mac()
+e1000_get_mac()
 {
   return e1000->mac;
 }
@@ -108,7 +107,6 @@ init_receive_descriptors()
   write_command(REG_RXDESCTAIL, E1000_NUM_RX_DESC-1);
   e1000->rx_cur = 0;
   write_command(REG_RCTRL, RCTL_EN | RCTL_SBP| RCTL_UPE | RCTL_MPE | RCTL_LBM_NONE | RTCL_RDMTS_HALF | RCTL_BAM | RCTL_SECRC  | RCTL_BSIZE_8192);
-
 }
 
 void
@@ -144,20 +142,6 @@ void start_link(void)
 }
 
 void
-irq_handler_e1000(void)
-{
-  // clear interrupt on device
-  write_command(REG_IMASK, 0x1);
-  uint32_t cause = read_command(REG_INT_CAUSE);
-  if (cause & LSC)
-    start_link();
-  if (cause & RXDMT0)
-    ; // good threshold
-  if (cause & RXT0)
-    receive_packet();
-}
-
-void
 start_e1000(void)
 {
   detect_eeprom();
@@ -169,9 +153,9 @@ start_e1000(void)
 }
 
 uint32_t
-send_packet(const void *p_data, uint16_t p_len)
+e1000_send_packet(const void *p_data, uint16_t p_len)
 {
-  if(!is_e1000_available()) return -1;
+  if(!e1000_is_available()) return -1;
 #ifdef E1000_DEBUG
   LOG_DEBUG("Sending packet with len %i", p_len)
 #endif
@@ -195,7 +179,7 @@ send_packet(const void *p_data, uint16_t p_len)
 void
 receive_packet()
 {
-  if(!is_e1000_available()) return;
+  if(!e1000_is_available()) return;
   
   uint16_t old_cur;
 
@@ -218,13 +202,27 @@ receive_packet()
 }
 
 uint8_t
-is_e1000_available(void)
+e1000_is_available(void)
 {
   return e1000->pci_device != (void*) 0;
 }
 
 void
-init_e1000(void)
+e1000_irq_handler(void)
+{
+  // clear interrupt on device
+  write_command(REG_IMASK, 0x1);
+  uint32_t cause = read_command(REG_INT_CAUSE);
+  if (cause & LSC)
+    start_link();
+  if (cause & RXDMT0)
+    ; // good threshold
+  if (cause & RXT0)
+    receive_packet();
+}
+
+void
+e1000_init(void)
 {
   e1000 = (e1000_device_t*) malloc(sizeof(e1000_device_t));
   if(e1000 == NULL)
@@ -236,9 +234,9 @@ init_e1000(void)
 #ifdef E1000_DEBUG
   LOG_DEBUG("Initializing driver.")
 #endif
-  e1000->pci_device = get_pci_device(INTEL_VEND, E1000_DEV);
+  e1000->pci_device = pci_get_device(INTEL_VEND, E1000_DEV);
   
-  if(!is_e1000_available())
+  if(!e1000_is_available())
     {
       LOG_ERROR("Network card not found!")
       return;
@@ -247,9 +245,9 @@ init_e1000(void)
   LOG_DEBUG("Network card found!")
 #endif
 
-  e1000->mem_base = alloc_pci_memory(e1000->pci_device, 0);
-  e1000->io_base = alloc_pci_memory(e1000->pci_device, 1);
-  enable_bus_mastering(e1000->pci_device->config_base);
+  e1000->mem_base = pci_alloc_memory(e1000->pci_device, 0);
+  e1000->io_base = pci_alloc_memory(e1000->pci_device, 1);
+  pci_enable_bus_mastering(e1000->pci_device->config_base);
 #ifdef E1000_DEBUG
   LOG_DEBUG("Membase: 0x%x iobase: 0x%x", e1000->mem_base, e1000->io_base)
 #endif

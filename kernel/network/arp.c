@@ -19,6 +19,7 @@
  ******************************************************************************/
 
 #include "arp.h"
+
 #include "kernel/logger/logger.h"
 #include "kernel/network/ethernet.h"
 #include "kernel/network/e1000.h"
@@ -81,7 +82,7 @@ arp_send_request(uint32_t ip)
 #ifdef ARP_DEBUG
   LOG_DEBUG("Sending arp request for ip %x", ip)
 #endif
-  send_ethernet(BROADCAST_MAC, TYPE_ARP, &arp_frame, sizeof(arp_frame_t));
+  ethernet_send(BROADCAST_MAC, TYPE_ARP, &arp_frame, sizeof(arp_frame_t));
 }
 
 void
@@ -98,9 +99,9 @@ arp_handle_request(arp_frame_t *frame)
         ntohl(frame->src_ip_address)
       );
 
-      send_ethernet(ntoh_mac(frame->src_hardware_addr), TYPE_ARP, &arp_frame, sizeof(arp_frame_t));
+      ethernet_send(ntoh_mac(frame->src_hardware_addr), TYPE_ARP, &arp_frame, sizeof(arp_frame_t));
 
-      update_arp_table(ntoh_mac(frame->src_hardware_addr), ntohl(frame->src_ip_address));
+      arp_table_update(ntoh_mac(frame->src_hardware_addr), ntohl(frame->src_ip_address));
     }
 }
 
@@ -109,7 +110,7 @@ arp_handle_reply(arp_frame_t *frame)
 {
   uint32_t ip = ntohl(frame->src_ip_address);
   mac_address_t mac = ntoh_mac(frame->src_hardware_addr);
-  update_arp_table(mac, ip);
+  arp_table_update(mac, ip);
 }
 
 arp_frame_t
@@ -123,7 +124,7 @@ arp_build_frame(uint16_t opcode, mac_address_t dest_hw, uint32_t dest_ip)
       .protocol_addr_len = IPV4_ADDR_LEN,
       .opcode = htons(opcode),
 
-      .src_hardware_addr = hton_mac(my_mac()),
+      .src_hardware_addr = hton_mac(e1000_get_mac()),
       .src_ip_address = htonl(OWN_IPV4_ADDR),
       .dest_hardware_addr = hton_mac(dest_hw),
       .dest_ip_address = htonl(dest_ip)

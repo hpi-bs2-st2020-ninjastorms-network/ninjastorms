@@ -20,11 +20,12 @@
 
 #pragma once
 
-#include <sys/types.h>
 #include "ethernet.h"
 
+#include <sys/types.h>
+
 // DEBUG LEVEL
-//#define ARP_DEBUG
+#define ARP_DEBUG
 
 // OPCODES
 #define ARP_REQUEST 0x0001
@@ -34,7 +35,7 @@
 #define HTYPE_ETHERNET 1
 
 // https://wiki.osdev.org/ARP
-struct arp_frame {
+typedef struct  __attribute__((packed)) {
   uint16_t hardware_type;
   uint16_t protocol_type;
   uint8_t hardware_addr_len;  // ethernet = 6
@@ -44,8 +45,7 @@ struct arp_frame {
   uint32_t src_ip_address;
   mac_address_t dest_hardware_addr;
   uint32_t dest_ip_address;
-} __attribute__((packed));
-typedef struct arp_frame arp_frame_t;
+} arp_frame_t;
 
 void arp_receive(ethernet_frame_t *frame);
 void arp_handle_request(arp_frame_t *frame);

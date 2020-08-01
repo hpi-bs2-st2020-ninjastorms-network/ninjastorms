@@ -22,9 +22,12 @@
 
 #include <sys/types.h>
 
-//#define ETHERNET_DEBUG
+#define ETHERNET_DEBUG
 #define ETH_MAC_ADDRESS_LENGTH 6
 #define MINIMUM_PAYLOAD_LENGTH 46
+
+#define NULL_MAC      ((mac_address_t) {{0x00,0x00,0x00,0x00,0x00,0x00}})
+#define BROADCAST_MAC ((mac_address_t) {{0xff,0xff,0xff,0xff,0xff,0xff}})
 
 typedef enum {
   TYPE_ARP = 0x0806,
@@ -32,22 +35,17 @@ typedef enum {
   TYPE_IPv6 = 0x86dd
 } ether_type;
 
-struct __mac_address {
+typedef struct __attribute__((packed)) {
   uint8_t address[6];
-} __attribute__((packed));
-typedef struct __mac_address mac_address_t;
+} mac_address_t;
 
-struct __ethernet_frame {
+typedef struct __attribute__((packed)) {
   mac_address_t dest_mac;
   mac_address_t src_mac;
   ether_type ether_type;
   uint8_t payload[];
-} __attribute__((packed));
-typedef struct __ethernet_frame ethernet_frame_t;
+} ethernet_frame_t;
 
-#define NULL_MAC      ((mac_address_t) {{0x00,0x00,0x00,0x00,0x00,0x00}})
-#define BROADCAST_MAC ((mac_address_t) {{0xff,0xff,0xff,0xff,0xff,0xff}})
-
-void send_ethernet(mac_address_t dest_mac, ether_type eth_type, void *payload, size_t len_payload);
+void ethernet_send(mac_address_t dest_mac, ether_type eth_type, void *payload, size_t len_payload);
 const char *mac_to_str (mac_address_t mac);
 uint8_t mac_address_equal(mac_address_t mac1, mac_address_t mac2);
