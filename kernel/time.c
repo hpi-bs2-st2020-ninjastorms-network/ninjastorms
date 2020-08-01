@@ -58,7 +58,7 @@ irq_handler_clock()
 }
 
 void
-init_time()
+time_init()
 {
   clock_stop();
   clock_start(TIMER_MILLIS_INTERVAL);
