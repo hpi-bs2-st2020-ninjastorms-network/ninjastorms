@@ -25,7 +25,7 @@
 
 #include <sys/types.h>
 
-#define E1000_DEBUG
+// #define E1000_DEBUG
 #define INTEL_VEND     0x8086  // Vendor ID for Intel 
 #define E1000_DEV      0x100E  // Device ID for the e1000 Qemu, Bochs, and VirtualBox emmulated NICs
 

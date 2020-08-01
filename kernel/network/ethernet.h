@@ -22,7 +22,7 @@
 
 #include <sys/types.h>
 
-#define ETHERNET_DEBUG
+// #define ETHERNET_DEBUG
 #define ETH_MAC_ADDRESS_LENGTH 6
 #define MINIMUM_PAYLOAD_LENGTH 46
 
