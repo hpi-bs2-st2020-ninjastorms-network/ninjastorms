@@ -29,7 +29,13 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
+/*
+ * Unpacks the ethernet_frame and handles the packet according to its opcode.
+ * Currently only ETHERNET with IPv4 is supported.
+ * Algorithm according to ARP definition in RFC826 https://tools.ietf.org/html/rfc826
+ */
 void
 arp_receive(ethernet_frame_t *frame) 
 {
@@ -58,19 +64,23 @@ arp_receive(ethernet_frame_t *frame)
   LOG_DEBUG("Destination IP: %x", ntohl(arp_frame->dest_ip_address))
 #endif
 
-  switch(ntohs(arp_frame->opcode))
+  bool merge_flag = false;
+  if(arp_table_update(ntoh_mac(arp_frame->src_hardware_addr), ntohl(arp_frame->src_ip_address)))
+    merge_flag = true;
+
+  if(ntohl(arp_frame->dest_ip_address) == OWN_IPV4_ADDR)
     {
-      case ARP_REQUEST:
+      if(!merge_flag)
+        arp_table_add_entry(ntoh_mac(arp_frame->src_hardware_addr), ntohl(arp_frame->src_ip_address));
+    
+      if(ntohs(arp_frame->opcode) == ARP_REQUEST)
         arp_handle_request(arp_frame);
-        break;
-      case ARP_REPLY:
-        arp_handle_reply(arp_frame);
-        break;
-      default:
-        break;
     }
 }
 
+/*
+ * Takes an ip address, builds an arp request and hands it on to the ethernet layer.
+ */
 void
 arp_send_request(uint32_t ip)
 {
@@ -85,34 +95,28 @@ arp_send_request(uint32_t ip)
   ethernet_send(BROADCAST_MAC, TYPE_ARP, &arp_frame, sizeof(arp_frame_t));
 }
 
+/*
+ * Takes an arp frame, builds a reply if our ip address was requested and hands the reply
+ * to the ethernet layer.
+ */
 void
 arp_handle_request(arp_frame_t *frame)
 {
-  if(ntohl(frame->dest_ip_address) == OWN_IPV4_ADDR)
-    {
 #ifdef ARP_DEBUG
-      LOG_DEBUG("I have been requested... let's answer.")
+  LOG_DEBUG("I have been requested... let's answer.")
 #endif
-      arp_frame_t arp_frame = arp_build_frame(
-        ARP_REPLY,
-        ntoh_mac(frame->src_hardware_addr), // use original sender as destination
-        ntohl(frame->src_ip_address)
-      );
+  arp_frame_t arp_frame = arp_build_frame(
+    ARP_REPLY,
+    ntoh_mac(frame->src_hardware_addr), // use original sender as destination
+    ntohl(frame->src_ip_address)
+  );
 
-      ethernet_send(ntoh_mac(frame->src_hardware_addr), TYPE_ARP, &arp_frame, sizeof(arp_frame_t));
-
-      arp_table_update(ntoh_mac(frame->src_hardware_addr), ntohl(frame->src_ip_address));
-    }
+  ethernet_send(ntoh_mac(frame->src_hardware_addr), TYPE_ARP, &arp_frame, sizeof(arp_frame_t));
 }
 
-void
-arp_handle_reply(arp_frame_t *frame)
-{
-  uint32_t ip = ntohl(frame->src_ip_address);
-  mac_address_t mac = ntoh_mac(frame->src_hardware_addr);
-  arp_table_update(mac, ip);
-}
-
+/*
+ * Builds an arp frame with operation opcode, destination mac dest_hw and destination ip dest_ip.
+ */
 arp_frame_t
 arp_build_frame(uint16_t opcode, mac_address_t dest_hw, uint32_t dest_ip)
 {

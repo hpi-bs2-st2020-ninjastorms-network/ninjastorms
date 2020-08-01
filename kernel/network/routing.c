@@ -26,12 +26,19 @@
 #include "kernel/network/arp.h"
 
 #include <stdlib.h>
+#include <stddef.h>
 
-arp_table_entry_t *arp_table;
+static arp_table_entry_t *arp_table = NULL;
 
+/*
+ * Checks if the arp table contains the ip. Removes expired entries.
+ * Returns the index on success, otherwise -1.
+ */
 uint32_t
 arp_table_find(uint32_t ip)
 {
+  if(arp_table == NULL) return -1;
+
   uint32_t res = -1;
   for (uint32_t i = 0; i < MAX_ARP_TABLE_ENTRIES; i++)
     {
@@ -56,9 +63,15 @@ arp_table_find(uint32_t ip)
   return res;
 }
 
+/*
+ * Checks if the arp table contains the ip and returns the corresponding mac on success.
+ * Returns the NULL_MAC otherwise.
+ */
 mac_address_t
 arp_table_lookup(uint32_t ip)
 {
+  if(arp_table == NULL) return NULL_MAC;
+
   uint32_t position = arp_table_find(ip);
   if (position != -1)
     return arp_table[position].mac;
@@ -66,9 +79,15 @@ arp_table_lookup(uint32_t ip)
     return NULL_MAC;
 }
 
+/*
+ * Checks if the arp table contains the ip.
+ * Returns the corresponding mac on success, otherwise it sends an arp request for the ip.
+ */
 mac_address_t
 arp_table_get_mac(uint32_t ip)
 {
+  if(arp_table == NULL) return NULL_MAC;
+
   mac_address_t mac = arp_table_lookup(ip);
   if (mac_address_equal(NULL_MAC, mac))
     {
@@ -79,11 +98,16 @@ arp_table_get_mac(uint32_t ip)
     return mac;
 }
 
+/*
+ * Adds a new entry in the arp table at a free slot if existing,
+ * otherwise overwrites the oldest entry.
+ */
 void
 arp_table_add_entry(mac_address_t mac, uint32_t ip) {
+  if(arp_table == NULL) return;
+
   uint32_t slot = 0;
 
-  // find next free slot, if not existing overwrite oldest
   for(uint32_t i = 0; i < MAX_ARP_TABLE_ENTRIES; i++)
     {
       if(!arp_table[i].entry_time)
@@ -102,9 +126,15 @@ arp_table_add_entry(mac_address_t mac, uint32_t ip) {
 #endif
 }
 
-void
+/*
+ * Updates an arp table entry if existing.
+ * Returns true iff updated.
+ */
+bool
 arp_table_update(mac_address_t mac, uint32_t ip) 
 {
+  if(arp_table == NULL) return false;
+
   uint32_t position = arp_table_find(ip);
   if (position != -1)
     {
@@ -112,15 +142,30 @@ arp_table_update(mac_address_t mac, uint32_t ip)
 #ifdef ROUTING_DEBUG
       LOG_DEBUG("Updated ip %x in arp table", ip)
 #endif
-      return;
+      return true;
     }
-
-  arp_table_add_entry(mac, ip);
+#ifdef ROUTING_DEBUG
+      LOG_DEBUG("IP %x not found in arp table", ip)
+#endif
+  return false;
 }
 
+/*
+ * Initializes the arp table and sets all entries to ARP_NULL_ENTRY.
+ */
 void
 routing_init()
 {
-  size_t size = MAX_ARP_TABLE_ENTRIES * sizeof(arp_table_entry_t);
-  arp_table = (arp_table_entry_t *) malloc(size);
+  if(arp_table == NULL)
+    {
+      size_t size = MAX_ARP_TABLE_ENTRIES * sizeof(arp_table_entry_t);
+      arp_table = (arp_table_entry_t *) malloc(size);
+      if(arp_table == NULL)
+        {
+          LOG_ERROR("Allocating memory for arp table failed!");
+          return;
+        }
+      for(uint32_t i = 0; i < MAX_ARP_TABLE_ENTRIES; i++)
+        arp_table[i] = ARP_NULL_ENTRY;
+    }
 }
