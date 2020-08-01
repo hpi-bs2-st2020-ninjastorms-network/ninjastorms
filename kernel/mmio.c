@@ -20,6 +20,10 @@
 
 #include "mmio.h"
 
+/*
+ * Functions for reading/writing in systems memory.
+ */
+
 uint8_t
 read8(uint32_t address)
 {
