@@ -20,6 +20,11 @@
 
 #include "pci_mmio.h"
 
+/*
+ * Functions for reading/writing on addresses in the PCI address space.
+ * Use kernel/mmio.h for reads in systems memory.
+ */
+
 uint8_t
 pci_read8(uint32_t address)
 {
@@ -44,7 +49,10 @@ pci_read64(uint32_t address)
   return *((volatile uint64_t*) address);
 }
 
-// works only if address % 4 == 0
+/*
+ * Writes a word to `address` on the PCI bus.
+ * ATTENTION: works only if address % 4 == 0.
+ */
 void
 write_word(uint32_t address, uint32_t value)
 {
