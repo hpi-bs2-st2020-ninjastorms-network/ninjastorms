@@ -25,11 +25,16 @@
 
 #include <stdio.h>
 #include <sys/types.h>
+#include <stddef.h>
 
 // https://github.com/autoas/as/blob/master/com/as.infrastructure/arch/versatilepb/bsp/pci.c
 
 pci_device_t pci_devices[MAX_PCI_DEVICES] = { 0 };
 
+/*
+ * Enables PCI bus mastering for the device stored at address by enabling
+ * the corresponding bits in the PCI_COMMAND register.
+ */
 void
 pci_enable_bus_mastering(uint32_t address)
 {
@@ -38,14 +43,22 @@ pci_enable_bus_mastering(uint32_t address)
   write16(address + PCI_COMMAND, val);
 }
 
+/*
+ * Returns the type of the bar with number number.
+ *
+ */
 uint8_t
 get_bar_type(uint32_t base, uint8_t number)
 {
   return read32(base + PCI_BAR(number)) & 1;
 }
 
-// Refer to page 204 in PCI 2.2 Spec 
-// https://www.ics.uci.edu/~harris/ics216/pci/PCI_22.pdf
+/*
+ * Returns the requested size for bar number.
+ *
+ * Refer to page 204 in PCI 2.2 Spec 
+ * https://www.ics.uci.edu/~harris/ics216/pci/PCI_22.pdf
+ */
 uint32_t
 get_bar_size(uint32_t base, uint8_t number)
 {
@@ -66,7 +79,10 @@ get_bar_size(uint32_t base, uint8_t number)
   return decoded_size;
 }
 
-// Currently there are no additional pci devices, thus there is no memory management
+/*
+ * Allocates memory for the device in its bar in the PCI memory space.
+ * Currently there is only one pci device thus there is no memory management.
+ */
 uint32_t
 pci_alloc_memory(pci_device_t* device, uint8_t bar)
 {
@@ -87,6 +103,10 @@ pci_alloc_memory(pci_device_t* device, uint8_t bar)
   return address;
 }
 
+/*
+ * Enumerates all pci devices by iterating over all available slots.
+ * Writes the found information in the pci_devices array at the corresponding index.
+ */
 void
 enumerate_pci_devices(void)
 {
@@ -113,6 +133,13 @@ enumerate_pci_devices(void)
     }
 }
 
+/*
+ * Discovers and configures the PCI core of the board.
+ * This is needed before the main PCI probing is performed.
+ * Makes sure that accesses to the PCI mapped memory can be translated correctly.
+ *
+ * Refer to https://developer.arm.com/documentation/dui0224/i/programmer-s-reference/pci-controller/pci-configuration?lang=en
+ */
 int32_t
 configure_board(void)
 {
@@ -123,7 +150,6 @@ configure_board(void)
   // prefetchable memory
   write32(PCI_IMAP2, 0x60000000 >> 28);
 
-  // We need to discover the PCI core first to configure itself before the main PCI probing is performed
   uint8_t slot = 0;
   for (int i = 11; i < 32; ++i)
     {
@@ -151,6 +177,11 @@ configure_board(void)
   return 0;
 }
 
+/*
+ * Iterates over all slots in the pci_devices and returns a pointer to the device
+ * identified by the vendor_id and device_id.
+ * If the device cannot be found, NULL is returned.
+ */
 pci_device_t*
 pci_get_device(uint16_t vendor_id, uint16_t device_id)
 {
@@ -160,9 +191,13 @@ pci_get_device(uint16_t vendor_id, uint16_t device_id)
     if(device->vendor_id == vendor_id && device->device_id == device_id)
       return device;
   }
-  return (void*)0;
+  return NULL;
 }
 
+/*
+ * Initializes the PCI bus by first configuring the board itself and
+ * enumerating all PCI devices afterwards.
+ */
 void
 pci_init(void)
 {
