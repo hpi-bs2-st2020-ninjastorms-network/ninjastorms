@@ -26,6 +26,9 @@
 
 static clock_t clock = 0;
 
+/*
+ * Starts the clock timer by setting the according bits.
+ */
 void
 clock_start(unsigned int period)
 {
