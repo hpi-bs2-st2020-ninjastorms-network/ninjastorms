@@ -64,7 +64,7 @@ detect_eeprom()
         e1000->eeprom_exists = 0;
     }
 #ifdef E1000_DEBUG
-  log_debug("eeprom exists: %x", e1000->eeprom_exists);
+  LOG_DEBUG("EEPROM exists: %x", e1000->eeprom_exists)
 #endif
 }
 
@@ -79,7 +79,7 @@ read_e1000_hardware_address()
       memcpy(&mac_network, &mac_data, 6);
       e1000->mac = ntoh_mac(mac_network);
 #ifdef E1000_DEBUG
-      log_debug("MAC: %s", mac_to_str(e1000->mac));
+      LOG_DEBUG("MAC: %s", mac_to_str(e1000->mac))
 #endif
     }
 }
@@ -173,7 +173,7 @@ send_packet(const void *p_data, uint16_t p_len)
 {
   if(!is_e1000_available()) return -1;
 #ifdef E1000_DEBUG
-  log_debug("Sending packet with len %i", p_len); 
+  LOG_DEBUG("Sending packet with len %i", p_len)
 #endif
   e1000_tx_desc_t *curr = &(e1000->tx_descs[e1000->tx_cur]);
   curr->addr = (uint32_t) p_data;
@@ -187,7 +187,7 @@ send_packet(const void *p_data, uint16_t p_len)
 
   while(!(curr->status));
 #ifdef E1000_DEBUG
-  log_debug("Packet send!"); 
+  LOG_DEBUG("Packet send!")
 #endif
   return 0;
 }
@@ -205,7 +205,7 @@ receive_packet()
       uint16_t len = e1000->rx_descs[e1000->rx_cur].length;
 
 #ifdef E1000_DEBUG
-      log_debug("received packet with length: %i", len)
+      LOG_DEBUG("Received packet with length: %i", len)
 #endif
 
       insert_packet(buf, len);
@@ -229,33 +229,29 @@ init_e1000(void)
   e1000 = (e1000_device_t*) malloc(sizeof(e1000_device_t));
   if(e1000 == NULL)
     {
-#ifdef E1000_DEBUG
-      log_warn("No memory for e1000 struct left!")
-#endif
+      LOG_ERROR("No memory for e1000 struct left!")
       return;
     }
 
 #ifdef E1000_DEBUG
-  log_debug("Initializing driver.")
+  LOG_DEBUG("Initializing driver.")
 #endif
   e1000->pci_device = get_pci_device(INTEL_VEND, E1000_DEV);
   
   if(!is_e1000_available())
     {
-#ifdef E1000_DEBUG
-      log_warn("Network card not found!")
-#endif
+      LOG_ERROR("Network card not found!")
       return;
     }
 #ifdef E1000_DEBUG
-  log_debug("Network card found!")
+  LOG_DEBUG("Network card found!")
 #endif
 
   e1000->mem_base = alloc_pci_memory(e1000->pci_device, 0);
   e1000->io_base = alloc_pci_memory(e1000->pci_device, 1);
   enable_bus_mastering(e1000->pci_device->config_base);
 #ifdef E1000_DEBUG
-  log_debug("membase: 0x%x iobase: 0x%x", e1000->mem_base, e1000->io_base)
+  LOG_DEBUG("Membase: 0x%x iobase: 0x%x", e1000->mem_base, e1000->io_base)
 #endif
   start_e1000();
 }

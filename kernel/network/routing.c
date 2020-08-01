@@ -70,7 +70,7 @@ add_arp_table_entry(mac_address_t mac, uint32_t ip) {
   arp_table[slot] = (arp_table_entry_t) {ip, mac, clock_seconds()};
 
 #ifdef ROUTING_DEBUG
-  log_debug("added ip %x in arp table at slot %i with time %i", ip, slot, (uint32_t)arp_table[slot].entry_time)
+  LOG_DEBUG("Added ip %x in arp table at slot %i with time %i", ip, slot, (uint32_t)arp_table[slot].entry_time)
 #endif
 }
 
@@ -81,7 +81,7 @@ update_arp_table(mac_address_t mac, uint32_t ip) {
     {
       arp_table[position].mac = mac;
 #ifdef ROUTING_DEBUG
-      log_debug("updated ip %x in arp table", ip)
+      LOG_DEBUG("Updated ip %x in arp table", ip)
 #endif
       return;
     }
@@ -100,7 +100,7 @@ arp_table_find(uint32_t ip)
         {
           // entry is too old, make it invalid
 #ifdef ROUTING_DEBUG
-          log_debug("entry at %i is too old with time %i", i, (uint32_t)arp_table[i].entry_time);
+          LOG_DEBUG("Entry at %i is too old with time %i", i, (uint32_t)arp_table[i].entry_time)
 #endif
           arp_table[i] = NULL_ENTRY;
         }
@@ -109,7 +109,7 @@ arp_table_find(uint32_t ip)
           res = i;
           arp_table[i].entry_time = clock_seconds();
 #ifdef ROUTING_DEBUG
-          log_debug("ip %x found in arp table at %i new time %i", ip, i, (uint32_t)arp_table[i].entry_time)
+          LOG_DEBUG("IP %x found in arp table at %i new time %i", ip, i, (uint32_t)arp_table[i].entry_time)
 #endif
         }
     }

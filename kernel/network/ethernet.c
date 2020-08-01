@@ -43,7 +43,7 @@ send_ethernet(mac_address_t dest_mac, ether_type eth_type, void *payload, size_t
   memcpy(eth_frame->payload, payload, len);
 
 #ifdef ETHERNET_DEBUG
-  log_debug("Payload is %i, adding %i padding", len_payload, len_padding);
+  LOG_DEBUG("Payload is %i, adding %i padding", len_payload, len_padding)
 #endif
   if(len_padding != 0)
     {

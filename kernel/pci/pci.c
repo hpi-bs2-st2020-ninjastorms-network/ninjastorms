@@ -87,7 +87,9 @@ alloc_pci_memory(pci_device_t* device, uint8_t bar)
 void
 enumerate_pci_devices(void)
 {
-  printf("[Enumerating PCI devices]\n");
+#ifdef PCI_DEBUG
+  LOG_DEBUG("Enumerating PCI devices:")
+#endif
   for (int i = 11; i < 32; ++i)
   {
     uint32_t device_addr = (PCI_CONFIG + ((i) << PCI_DEVICE_BIT_OFFSET));
@@ -102,7 +104,9 @@ enumerate_pci_devices(void)
     device->vendor_id = vendor_id;
     device->device_id = device_id;
 
-    printf("[PCI] Device slot: %i at: 0x%x DeviceID: 0x%x VendorID: 0x%x\n", i, device_addr, vendor_id, device_id);
+#ifdef PCI_DEBUG
+    LOG_DEBUG("Device slot: %i at: 0x%x DeviceID: 0x%x VendorID: 0x%x", i, device_addr, vendor_id, device_id)
+#endif
   }
 }
 
@@ -128,7 +132,7 @@ board_configuration(void)
         }
     }
   if(slot == 0){
-    printf("[PCI] Cannot find PCI core!\n");
+    LOG_ERROR("Cannot find PCI core!")
     return -1;
   }
   uint32_t pci_config_base = PCI_CONFIG + (slot << PCI_DEVICE_BIT_OFFSET);
@@ -159,7 +163,9 @@ get_pci_device(uint16_t vendor_id, uint16_t device_id)
 void
 pci_init(void)
 {
-  printf("[PCI] Initiating\n");
+#ifdef PCI_DEBUG
+  LOG_DEBUG("Initiating PCI")
+#endif
   board_configuration();
   enumerate_pci_devices();
 }
