@@ -49,6 +49,5 @@ typedef struct  __attribute__((packed)) {
 
 void arp_receive(ethernet_frame_t *frame);
 void arp_handle_request(arp_frame_t *frame);
-void arp_handle_reply(arp_frame_t *frame);
 void arp_send_request(uint32_t ip);
 arp_frame_t arp_build_frame(uint16_t opcode, mac_address_t dest_hw, uint32_t dest_ip);
