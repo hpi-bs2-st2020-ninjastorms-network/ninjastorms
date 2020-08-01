@@ -23,7 +23,9 @@
 #include "kernel/mmio.h"
 #include "kernel/network/ethernet.h"
 
-// Convert int from host byte order to network byte order
+/*
+ * Converts int from host byte order to network byte order.
+ */
 uint32_t
 htonl(uint32_t hostlong)
 {
@@ -33,7 +35,9 @@ htonl(uint32_t hostlong)
     return __builtin_bswap32(hostlong);
 }
 
-// Convert short from host byte order to network byte order
+/*
+ * Converts short from host byte order to network byte order.
+ */
 uint16_t
 htons(uint16_t hostshort)
 {
@@ -43,7 +47,9 @@ htons(uint16_t hostshort)
     return __builtin_bswap16(hostshort);
 }
 
-// Convert int from network byte order to host byte order
+/*
+ * Converts int from network byte order to host byte order.
+ */
 uint32_t
 ntohl(uint32_t netlong)
 {
@@ -53,7 +59,9 @@ ntohl(uint32_t netlong)
     return __builtin_bswap32(netlong);
 }
 
-// Convert short from network byte order to host byte order
+/*
+ * Converts short from network byte order to host byte order.
+ */
 uint16_t
 ntohs(uint16_t netshort)
 {
@@ -63,7 +71,9 @@ ntohs(uint16_t netshort)
     return __builtin_bswap16(netshort);
 }
 
-// Convert mac address from host byte order to network byte order
+/*
+ * Converts mac address from host byte order to network byte order.
+ */
 mac_address_t
 hton_mac(mac_address_t mac)
 {
@@ -79,7 +89,9 @@ hton_mac(mac_address_t mac)
   
 }
 
-// Convert mac address from network byte order to host byte order
+/*
+ * Converts mac address from network byte order to host byte order.
+ */
 mac_address_t
 ntoh_mac(mac_address_t mac)
 {
@@ -94,7 +106,10 @@ ntoh_mac(mac_address_t mac)
     }
 }
 
-// Check whether current running mode is set to little or big endian
+/*
+ * Check whether current running mode is set to little or big endian
+ * via looking at the system register.
+ */
 uint8_t
 is_big_endian()
 {

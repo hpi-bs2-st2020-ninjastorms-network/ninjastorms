@@ -26,6 +26,10 @@
 
 #include <stdio.h>
 
+/*
+ * Takes a raw_packet and converts it data to an ethernet frame.
+ * Reads the ether type and passes the packet to the corresponding protocol.
+ */
 void
 start_pdu_encapsulation(raw_packet_t *buf) 
 {

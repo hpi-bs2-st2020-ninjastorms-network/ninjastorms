@@ -48,13 +48,17 @@ read_command(uint32_t address)
   return pci_read32(e1000->mem_base+address);
 }
 
+/*
+ * Checks whether the e1000 is using an eeprom and stores it in e1000 object.
+ * Writes to the eeprom register first and performs a set of reads to check.
+ */
 void
 detect_eeprom()
 {
   write_command(REG_EEPROM, 0x1);
 
   uint32_t val = 0;
-  for(uint16_t i = 0; i < 1000 && ! e1000->eeprom_exists; i++)
+  for(uint16_t i = 0; i < 1000 && !e1000->eeprom_exists; i++)
     {
       val = read_command(REG_EEPROM);
       if(val & 0x10)
@@ -67,6 +71,10 @@ detect_eeprom()
 #endif
 }
 
+/*
+ * Reads the hardware address using the pci bus and stores it in host byte order in
+ * the e1000 object.
+ */
 void
 read_e1000_hardware_address()
 { 
@@ -89,6 +97,16 @@ e1000_get_mac()
   return e1000->mac;
 }
 
+/*
+ * Initializes the receive descriptors of the e1000 and tells it where to find them.
+ * For each descriptor space in the systems memory is allocated, to allow the
+ * e1000 to write the packet data into.
+ * IMPORTANT: The addresses have to be 16-byte aligned!
+ * See header file for information on the configured settings.
+ *
+ * A receive descriptor contains information on the received packets like status, checksum and length.
+ * The e1000 uses a ring buffer to store the descriptors.
+ */
 void
 init_receive_descriptors()
 {
@@ -109,6 +127,13 @@ init_receive_descriptors()
   write_command(REG_RCTRL, RCTL_EN | RCTL_SBP| RCTL_UPE | RCTL_MPE | RCTL_LBM_NONE | RTCL_RDMTS_HALF | RCTL_BAM | RCTL_SECRC  | RCTL_BSIZE_8192);
 }
 
+/*
+ * Initializes the transmit descriptors of the e1000 and tells it where to find them.
+ * See header file for information on the configured settings.
+ *
+ * A transmit descriptor contains information on the packets to be transmitted like transmit status.
+ * The e1000 uses a ring buffer to store the descriptors.
+ */
 void
 init_transmit_descriptors()
 {
@@ -152,6 +177,10 @@ start_e1000(void)
   init_transmit_descriptors();
 }
 
+/*
+ * Fills the next transmit buffer with information on the data to send.
+ * Tells the e1000 that a new packet is available for send and waits until its send.
+ */
 uint32_t
 e1000_send_packet(const void *p_data, uint16_t p_len)
 {
@@ -176,6 +205,12 @@ e1000_send_packet(const void *p_data, uint16_t p_len)
   return 0;
 }
 
+/*
+ * Receives all currently available packets from the e1000.
+ * Inserts each packet into the network task receives queue to receive them
+ * asyncronically, as this method is called in an interrupt_handler.
+ * Clears the receive descriptor on receive.
+ */
 void
 receive_packet()
 {
@@ -221,6 +256,10 @@ e1000_irq_handler(void)
     receive_packet();
 }
 
+/*
+ * Allocates memory for the e100 and configures it as a pci device.
+ * Starts the e1000 on success.
+ */
 void
 e1000_init(void)
 {

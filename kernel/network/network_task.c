@@ -32,36 +32,9 @@ static int recv_queue_start  = 0;
 static int recv_queue_end    = 0;
 static raw_packet_t recv_packet_queue[MAX_PACKET_COUNT] = { 0 };
 
-void
-network_task_recv (void)
-{
-  routing_init();
-  while(1)
-    {
-      if(new_packet_available())
-        {
-          raw_packet_t *packet = remove_packet();
-          start_pdu_encapsulation(packet);
-        }
-    }
-}
-
-void
-insert_packet (uint8_t *data, size_t len)
-{
-  int new_end = (recv_queue_end + 1) % MAX_PACKET_COUNT;
-  if (new_end != recv_queue_start)
-    {
-      recv_packet_queue[recv_queue_end].length = len;
-      memcpy(&recv_packet_queue[recv_queue_end].data, data, len);
-      recv_queue_end = new_end;
-    }
-  else
-    {
-      LOG_WARN("Packet Queue full!");
-    }
-}
-
+/*
+ * Takes the next packet out of the receive queue and returns it (simple pop operation).
+ */
 raw_packet_t*
 remove_packet (void)
 {
@@ -77,4 +50,42 @@ uint8_t
 new_packet_available (void) 
 {
   return recv_queue_start != recv_queue_end;
+}
+
+/*
+ * A concurrent running task the receives packets from its receive ring buffer and
+ * inserts them into the network stack.
+ */
+void
+network_task_recv (void)
+{
+  routing_init();
+  while(1)
+    {
+      if(new_packet_available())
+        {
+          raw_packet_t *packet = remove_packet();
+          start_pdu_encapsulation(packet);
+        }
+    }
+}
+
+/*
+ * Insert a new packet into the ring buffer if space is left.
+ * Throws the packet away if queue if full.
+ */
+void
+insert_packet (uint8_t *data, size_t len)
+{
+  int new_end = (recv_queue_end + 1) % MAX_PACKET_COUNT;
+  if (new_end != recv_queue_start)
+    {
+      recv_packet_queue[recv_queue_end].length = len;
+      memcpy(&recv_packet_queue[recv_queue_end].data, data, len);
+      recv_queue_end = new_end;
+    }
+  else
+    {
+      LOG_WARN("Packet Queue full!");
+    }
 }
