@@ -28,7 +28,7 @@
 typedef unsigned long long clock_t;
 
 void irq_handler_clock();
-void init_time();
+void time_init();
 
 // clock is time since system start
 clock_t clock_millis();

@@ -19,7 +19,10 @@
  ******************************************************************************/
 
 #include "pci.h"
+
 #include "kernel/mmio.h"
+#include "kernel/logger/logger.h"
+
 #include <stdio.h>
 #include <sys/types.h>
 
@@ -28,7 +31,7 @@
 pci_device_t pci_devices[MAX_PCI_DEVICES] = { 0 };
 
 void
-enable_bus_mastering(uint32_t address)
+pci_enable_bus_mastering(uint32_t address)
 {
   uint16_t val = read16(address + PCI_COMMAND);
   val |= PCI_COMMAND_MASTER | PCI_COMMAND_IO | PCI_COMMAND_MEMORY;
@@ -65,7 +68,7 @@ get_bar_size(uint32_t base, uint8_t number)
 
 // Currently there are no additional pci devices, thus there is no memory management
 uint32_t
-alloc_pci_memory(pci_device_t* device, uint8_t bar)
+pci_alloc_memory(pci_device_t* device, uint8_t bar)
 {
   uint32_t size = get_bar_size(device->config_base, bar);
   uint8_t type = get_bar_type(device->config_base, bar);
@@ -91,27 +94,27 @@ enumerate_pci_devices(void)
   LOG_DEBUG("Enumerating PCI devices:")
 #endif
   for (int i = 11; i < 32; ++i)
-  {
-    uint32_t device_addr = (PCI_CONFIG + ((i) << PCI_DEVICE_BIT_OFFSET));
-    int32_t vendor_id = read16(device_addr + PCI_VENDOR_ID);
-    int32_t device_id = read16(device_addr + PCI_DEVICE_ID);
-    
-    if(vendor_id == PCI_INVALID_VENDOR) continue;
+    {
+      uint32_t device_addr = (PCI_CONFIG + ((i) << PCI_DEVICE_BIT_OFFSET));
+      int32_t vendor_id = read16(device_addr + PCI_VENDOR_ID);
+      int32_t device_id = read16(device_addr + PCI_DEVICE_ID);
+      
+      if(vendor_id == PCI_INVALID_VENDOR) continue;
 
-    pci_device_t* device = &pci_devices[i - 11];
-    device->config_base = device_addr;
-    device->pci_slot_id = i;
-    device->vendor_id = vendor_id;
-    device->device_id = device_id;
+      pci_device_t* device = &pci_devices[i - 11];
+      device->config_base = device_addr;
+      device->pci_slot_id = i;
+      device->vendor_id = vendor_id;
+      device->device_id = device_id;
 
 #ifdef PCI_DEBUG
     LOG_DEBUG("Device slot: %i at: 0x%x DeviceID: 0x%x VendorID: 0x%x", i, device_addr, vendor_id, device_id)
 #endif
-  }
+    }
 }
 
 int32_t
-board_configuration(void)
+configure_board(void)
 {
   // Setup imap registers for memory translation
   write32(PCI_IMAP0, 0x44000000 >> 28);
@@ -149,7 +152,7 @@ board_configuration(void)
 }
 
 pci_device_t*
-get_pci_device(uint16_t vendor_id, uint16_t device_id)
+pci_get_device(uint16_t vendor_id, uint16_t device_id)
 {
   for (uint8_t i = 0; i < MAX_PCI_DEVICES; ++i)
   {
@@ -166,6 +169,6 @@ pci_init(void)
 #ifdef PCI_DEBUG
   LOG_DEBUG("Initiating PCI")
 #endif
-  board_configuration();
+  configure_board();
   enumerate_pci_devices();
 }

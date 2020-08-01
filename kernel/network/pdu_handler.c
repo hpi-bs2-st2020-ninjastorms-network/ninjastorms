@@ -19,6 +19,7 @@
  ******************************************************************************/
 
 #include "pdu_handler.h"
+
 #include "kernel/network/network_io.h"
 #include "kernel/network/ethernet.h"
 #include "kernel/network/arp.h"

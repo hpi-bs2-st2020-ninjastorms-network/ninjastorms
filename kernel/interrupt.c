@@ -24,7 +24,6 @@
 #include "kernel/memory.h"
 #include "kernel/time.h"
 #include "kernel/interrupt_handler.h"
-
 #include "kernel/mmio.h"
 #include "kernel/network/e1000.h"
 
@@ -74,7 +73,7 @@ handle_interrupt (void)
 {
   uint32_t status = read32((uint32_t) PIC_IRQ_STATUS);
   if(status & PCI3_INTBIT)
-    irq_handler_e1000();
+    e1000_irq_handler();
   if(status & TIMER1_INTBIT)
     irq_handler_timer();
   if(status & TIMER3_INTBIT)

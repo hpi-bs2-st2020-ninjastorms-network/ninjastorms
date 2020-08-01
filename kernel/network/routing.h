@@ -23,23 +23,20 @@
 #include "kernel/network/ethernet.h"
 #include "kernel/time.h"
 
-//#define ROUTING_DEBUG
+#define ROUTING_DEBUG
 
 #define MAX_ARP_TABLE_ENTRIES 10
 #define MAX_ARP_TABLE_AGE 5 // seconds
 
-#define NULL_ENTRY (arp_table_entry_t){0, {0}, 0}
+#define ARP_NULL_ENTRY (arp_table_entry_t){0, {0}, 0}
 
-struct __arp_table_entry {
+typedef struct {
   uint32_t ip;
   mac_address_t mac;
   clock_t entry_time;
-};
-typedef struct __arp_table_entry arp_table_entry_t;
+} arp_table_entry_t;
 
 mac_address_t arp_table_lookup(uint32_t ip);
-mac_address_t arp_get_mac(uint32_t ip);
-void add_arp_table_entry(mac_address_t mac, uint32_t ip);
-void update_arp_table(mac_address_t mac, uint32_t ip);
-void initialize_routing();
-uint32_t arp_table_find(uint32_t ip);
+mac_address_t arp_table_get_mac(uint32_t ip);
+void arp_table_update(mac_address_t mac, uint32_t ip);
+void routing_init();

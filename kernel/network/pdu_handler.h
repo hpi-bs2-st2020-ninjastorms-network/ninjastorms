@@ -20,9 +20,10 @@
 
 #pragma once
 
-#include <sys/types.h>
 #include "kernel/network/network_task.h"
 #include "kernel/network/ethernet.h"
+
+#include <sys/types.h>
 
 // takes raw input from driver and starts encapsulation
 void start_pdu_encapsulation (raw_packet_t* buf);

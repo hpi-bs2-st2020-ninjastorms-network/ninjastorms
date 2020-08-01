@@ -21,12 +21,11 @@
 #pragma once
 
 #include "kernel/pci/pci.h"
-#include <sys/types.h>
-
 #include "kernel/network/ethernet.h"
 
-//#define E1000_DEBUG
+#include <sys/types.h>
 
+#define E1000_DEBUG
 #define INTEL_VEND     0x8086  // Vendor ID for Intel 
 #define E1000_DEV      0x100E  // Device ID for the e1000 Qemu, Bochs, and VirtualBox emmulated NICs
 
@@ -141,17 +140,16 @@
 #define MAX_PACKET_SIZE 8192
 #define E1000_NUM_TX_DESC 8
 
-struct e1000_rx_desc {
+typedef struct __attribute__((packed)) {
   volatile uint64_t addr;
   volatile uint16_t length;
   volatile uint16_t checksum;
   volatile uint8_t status;
   volatile uint8_t errors;
   volatile uint16_t special;
-} __attribute__((packed));
-typedef struct e1000_rx_desc e1000_rx_desc_t;
+} e1000_rx_desc_t;
 
-struct e1000_tx_desc {
+typedef struct __attribute__((packed)) {
   volatile uint64_t addr;
   volatile uint16_t length;
   volatile uint8_t cso;
@@ -159,10 +157,9 @@ struct e1000_tx_desc {
   volatile uint8_t status;
   volatile uint8_t css;
   volatile uint16_t special;
-} __attribute__((packed));
-typedef struct e1000_tx_desc e1000_tx_desc_t;
+} e1000_tx_desc_t;
 
-struct __e1000_device {
+typedef struct {
   e1000_rx_desc_t rx_descs[E1000_NUM_RX_DESC]; // Receive Descriptor Buffers
   e1000_tx_desc_t tx_descs[E1000_NUM_TX_DESC]; // Transmit Descriptor Buffers
   uint32_t io_base;     // IO Base Address
@@ -172,15 +169,12 @@ struct __e1000_device {
   uint16_t rx_cur;      // Current Receive Descriptor Buffer
   uint16_t tx_cur;      // Current Transmit Descriptor Buffer
   pci_device_t *pci_device; // Corresponding PCI Device
-};
-typedef struct __e1000_device e1000_device_t;
+} e1000_device_t;
 
 extern e1000_device_t* e1000;
 
-void init_e1000(void);
-void irq_handler_e1000(void);
-
-uint32_t send_packet(const void *p_data, uint16_t p_len);
-void receive_packet();
-uint8_t is_e1000_available();
-mac_address_t my_mac();
+void e1000_init(void);
+void e1000_irq_handler(void);
+uint32_t e1000_send_packet(const void *p_data, uint16_t p_len);
+uint8_t e1000_is_available();
+mac_address_t e1000_get_mac();

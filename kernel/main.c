@@ -118,8 +118,7 @@ kernel_main (void)
   puts(shuriken);
 
   pci_init();
-  init_e1000();
-  init_time();
+  e1000_init();
 
   add_task(&network_task_recv);
   //add_task(&task_a);
@@ -127,7 +126,10 @@ kernel_main (void)
   //add_task(&task_c);
   //add_task(&task_d);
   //add_task(&syscall_test);
-
+ 
+  // keep this method at this line, otherwise we can't guarantee for your life 
+  // see https://github.com/hpi-bs2-st2020-ninjastorms-network/ninjastorms/issues/28
+  time_init(); 
   start_scheduler();
 
   puts("All done. ninjastorms out!");

@@ -20,8 +20,9 @@
 
 #pragma once
 
-#include <sys/types.h>
 #include "kernel/network/ethernet.h"
+
+#include <sys/types.h>
 
 // https://developer.arm.com/documentation/dui0224/i/programmer-s-reference/status-and-system-control-registers/configuration-registers-sys-cfgdatax
 // Register storing e.g. endianess

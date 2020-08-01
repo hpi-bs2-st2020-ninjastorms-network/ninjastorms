@@ -19,6 +19,7 @@
  ******************************************************************************/
 
 #include "network_io.h"
+
 #include "kernel/mmio.h"
 #include "kernel/network/ethernet.h"
 

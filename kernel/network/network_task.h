@@ -20,8 +20,9 @@
 
 #pragma once
 
-#include <sys/types.h>
 #include "kernel/network/e1000.h"
+
+#include <sys/types.h>
 
 #define MAX_PACKET_COUNT 128
 

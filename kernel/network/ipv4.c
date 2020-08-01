@@ -19,17 +19,19 @@
  ******************************************************************************/
 
 #include "ipv4.h"
+
 #include "kernel/time.h"
 #include "kernel/network/ethernet.h"
 #include "kernel/network/routing.h"
 #include "kernel/logger/logger.h"
+
 #include <sys/types.h>
 
 uint32_t
-send_ipv4(uint32_t ip, void *payload, size_t len)
+ipv4_send(uint32_t ip, void *payload, size_t len)
 {
   // TODO: implement protocol
-  mac_address_t dest_mac = arp_get_mac(ip);
+  mac_address_t dest_mac = arp_table_get_mac(ip);
   uint64_t start = clock_seconds();
   while(mac_address_equal(dest_mac, NULL_MAC))
     {
@@ -43,6 +45,6 @@ send_ipv4(uint32_t ip, void *payload, size_t len)
         }
     }
 
-  send_ethernet(dest_mac, TYPE_IPv4, payload, len);
+  ethernet_send(dest_mac, TYPE_IPv4, payload, len);
   return 0;
 }

@@ -19,6 +19,7 @@
  ******************************************************************************/
 
 #include "ethernet.h"
+
 #include "kernel/network/arp.h"
 #include "kernel/network/e1000.h"
 #include "kernel/network/network_io.h"
@@ -31,14 +32,14 @@
 #define INTTOHEXCHAR(val) ((val) > 9 ? (val)+'a'-10 : (val) + '0')
 
 void
-send_ethernet(mac_address_t dest_mac, ether_type eth_type, void *payload, size_t len_payload)
+ethernet_send(mac_address_t dest_mac, ether_type eth_type, void *payload, size_t len_payload)
 {
   // make sure ethernet frame is at least 60 bytes long
   uint8_t len_padding = len_payload < MINIMUM_PAYLOAD_LENGTH ? MINIMUM_PAYLOAD_LENGTH - len_payload : 0;
   uint32_t len = len_padding + len_payload;
   ethernet_frame_t *eth_frame = (ethernet_frame_t *) malloc(sizeof(ethernet_frame_t) + len);
   eth_frame->dest_mac = hton_mac(dest_mac);
-  eth_frame->src_mac = hton_mac(my_mac());
+  eth_frame->src_mac = hton_mac(e1000_get_mac());
   eth_frame->ether_type = htons(eth_type);
   memcpy(eth_frame->payload, payload, len);
 
@@ -51,7 +52,7 @@ send_ethernet(mac_address_t dest_mac, ether_type eth_type, void *payload, size_t
       memcpy(eth_frame->payload + len_payload, padding, len_padding);
     }
 
-  send_packet(eth_frame, sizeof(ethernet_frame_t) + len);
+  e1000_send_packet(eth_frame, sizeof(ethernet_frame_t) + len);
 
   free(eth_frame);
 }

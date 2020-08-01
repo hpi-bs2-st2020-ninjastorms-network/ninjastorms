@@ -19,6 +19,7 @@
  ******************************************************************************/
 
 #include "network_task.h"
+
 #include "kernel/network/e1000.h"
 #include "kernel/logger/logger.h"
 #include "kernel/network/pdu_handler.h"
@@ -34,11 +35,12 @@ static raw_packet_t recv_packet_queue[MAX_PACKET_COUNT] = { 0 };
 void
 network_task_recv (void)
 {
-  initialize_routing();
+  routing_init();
   while(1)
     {
       if(new_packet_available())
         {
+          LOG_DEBUG("Received new packet.")
           raw_packet_t *packet = remove_packet();
           start_pdu_encapsulation(packet);
         }
