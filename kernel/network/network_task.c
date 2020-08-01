@@ -40,7 +40,6 @@ network_task_recv (void)
     {
       if(new_packet_available())
         {
-          LOG_DEBUG("Received new packet.")
           raw_packet_t *packet = remove_packet();
           start_pdu_encapsulation(packet);
         }

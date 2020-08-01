@@ -25,7 +25,7 @@
 #include <sys/types.h>
 
 // DEBUG LEVEL
-#define ARP_DEBUG
+// #define ARP_DEBUG
 
 // OPCODES
 #define ARP_REQUEST 0x0001

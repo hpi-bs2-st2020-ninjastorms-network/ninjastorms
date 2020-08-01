@@ -22,7 +22,7 @@
 
 #include <sys/types.h>
 
-#define PCI_DEBUG
+// #define PCI_DEBUG
 
 #define PCI_SELF_CONFIG 0x41000000
 #define PCI_CONFIG 0x42000000
