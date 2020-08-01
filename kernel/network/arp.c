@@ -38,23 +38,23 @@ arp_receive(ethernet_frame_t *frame)
   if(ntohs(arp_frame->hardware_type) != HTYPE_ETHERNET || arp_frame->hardware_addr_len != ETH_MAC_ADDRESS_LENGTH)
     {
 #ifdef ARP_DEBUG
-      log_warn("Hardware type is not supported! (no ethernet) hwtype: %x addr_len: %x", arp_frame->hardware_type, arp_frame->hardware_addr_len)
+      LOG_WARN("Hardware type is not supported! (no ethernet) hwtype: %x addr_len: %x", arp_frame->hardware_type, arp_frame->hardware_addr_len)
 #endif
       return;
     }
   if(ntohs(arp_frame->protocol_type) != TYPE_IPv4 || arp_frame->protocol_addr_len != IPV4_ADDR_LEN)
     {
 #ifdef ARP_DEBUG
-      log_warn("Protocol type is not supported! (no ipv4)");
+      LOG_WARN("Protocol type is not supported! (no ipv4)")
 #endif
       return;
     }
 #ifdef ARP_DEBUG
-  log_debug("Found ARP packet:")
-  log_debug("Source HW: %s", mac_to_str(ntoh_mac(arp_frame->src_hardware_addr)))
-  log_debug("Source IP: %x", ntohl(arp_frame->src_ip_address))
-  log_debug("Destination HW: %s", mac_to_str(ntoh_mac(arp_frame->dest_hardware_addr)))
-  log_debug("Destination IP: %x", ntohl(arp_frame->dest_ip_address))
+  LOG_DEBUG("Found ARP packet:")
+  LOG_DEBUG("Source HW: %s", mac_to_str(ntoh_mac(arp_frame->src_hardware_addr)))
+  LOG_DEBUG("Source IP: %x", ntohl(arp_frame->src_ip_address))
+  LOG_DEBUG("Destination HW: %s", mac_to_str(ntoh_mac(arp_frame->dest_hardware_addr)))
+  LOG_DEBUG("Destination IP: %x", ntohl(arp_frame->dest_ip_address))
 #endif
 
   switch(ntohs(arp_frame->opcode))
@@ -79,7 +79,7 @@ arp_send_request(uint32_t ip)
     ip
   );
 #ifdef ARP_DEBUG
-  log_debug("Sending arp request for ip %x", ip)
+  LOG_DEBUG("Sending arp request for ip %x", ip)
 #endif
   send_ethernet(BROADCAST_MAC, TYPE_ARP, &arp_frame, sizeof(arp_frame_t));
 }
@@ -90,7 +90,7 @@ arp_handle_request(arp_frame_t *frame)
   if(ntohl(frame->dest_ip_address) == OWN_IPV4_ADDR)
     {
 #ifdef ARP_DEBUG
-      log_debug("I have been requested... let's answer.");
+      LOG_DEBUG("I have been requested... let's answer.")
 #endif
       arp_frame_t arp_frame = arp_build_frame(
         ARP_REPLY,

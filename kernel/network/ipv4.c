@@ -37,7 +37,7 @@ send_ipv4(uint32_t ip, void *payload, size_t len)
       if(clock_seconds() - start > WAIT_ON_ARP_TIMEOUT)
         {
 #ifdef IPV4_DEBUG
-          log_debug("Sending to IP %x timed out waiting for arp", ip)
+          LOG_DEBUG("Sending to IP %x timed out waiting for arp", ip)
 #endif
           return -1;
         }
