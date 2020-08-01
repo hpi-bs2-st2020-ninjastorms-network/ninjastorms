@@ -21,7 +21,6 @@
 #include "time.h"
 #include "kernel/memory.h"
 #include <sys/types.h>
-#include <stdio.h>
 
 #define INTTOCHAR(val) ((val) + '0')
 
