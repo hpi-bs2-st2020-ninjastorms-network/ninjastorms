@@ -33,14 +33,14 @@ void
 clock_start(unsigned int period)
 {
 #if BOARD_VERSATILEPB
-  *TIMER3_CTRL &= ~(1 << 7);   // disable timer
-  *TIMER3_CTRL |= 1 << 6;      // set periodic-mode
-  *TIMER3_INTCLR = (char)0x1;  // clear interrupts
-  *TIMER3_CTRL |= 1 << 5;      // set IntEnable
-  *TIMER3_CTRL |= 1 << 1;      // set 32-bit mode
-  *TIMER3_CTRL &= ~(1 << 0);   // set Wrapping-Mode
-  *TIMER3_LOAD  = period;      // set timer period
-  *TIMER3_CTRL |= 1 << 7;      // start timer
+  *TIMER3_CTRL &= ~(1 << 7);    // disable timer
+  *TIMER3_CTRL |= 1 << 6;       // set periodic-mode
+  *TIMER3_INTCLR = (char) 0x1;  // clear interrupts
+  *TIMER3_CTRL |= 1 << 5;       // set IntEnable
+  *TIMER3_CTRL |= 1 << 1;       // set 32-bit mode
+  *TIMER3_CTRL &= ~(1 << 0);    // set Wrapping-Mode
+  *TIMER3_LOAD = period;        // set timer period
+  *TIMER3_CTRL |= 1 << 7;       // start timer
 #endif
 }
 
@@ -48,8 +48,8 @@ void
 clock_stop(void)
 {
 #if BOARD_VERSATILEPB
-  *TIMER3_CTRL &= ~(1 << 7);        // disable timer
-  *TIMER3_INTCLR = (char)0x1;       // clear interrupts
+  *TIMER3_CTRL &= ~(1 << 7);    // disable timer
+  *TIMER3_INTCLR = (char) 0x1;  // clear interrupts
 #endif
 }
 
@@ -94,14 +94,14 @@ clock_hours()
 const char *
 clock_formatted_msms()
 {
-  uint64_t mils = clock_millis(), secs = mils/1000, mins = mils/60000;
-  char *format = "mm:ss:lll"; // minutes:seconds:millis
-  format[0] = INTTOCHAR((mins/10)%10);
-  format[1] = INTTOCHAR(mins%10);
-  format[3] = INTTOCHAR((secs/10)%10);
-  format[4] = INTTOCHAR(secs%10);
-  format[6] = INTTOCHAR((mils/100)%10);
-  format[7] = INTTOCHAR((mils/10)%10);
-  format[8] = INTTOCHAR(mils%10);
+  uint64_t mils = clock_millis(), secs = mils / 1000, mins = mils / 60000;
+  char *format = "mm:ss:lll";   // minutes:seconds:millis
+  format[0] = INTTOCHAR((mins / 10) % 10);
+  format[1] = INTTOCHAR(mins % 10);
+  format[3] = INTTOCHAR((secs / 10) % 10);
+  format[4] = INTTOCHAR(secs % 10);
+  format[6] = INTTOCHAR((mils / 100) % 10);
+  format[7] = INTTOCHAR((mils / 10) % 10);
+  format[8] = INTTOCHAR(mils % 10);
   return format;
 }

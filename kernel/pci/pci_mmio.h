@@ -22,7 +22,7 @@
 
 #include <sys/types.h>
 
-uint8_t  pci_read8(uint32_t address);
+uint8_t pci_read8(uint32_t address);
 uint16_t pci_read16(uint32_t address);
 uint32_t pci_read32(uint32_t address);
 uint64_t pci_read64(uint32_t address);

@@ -40,13 +40,13 @@ ipv4_send(uint32_t ip, void *payload, size_t len)
   // TODO: implement protocol
   mac_address_t dest_mac = arp_table_get_mac(ip);
   uint64_t start = clock_seconds();
-  while(mac_address_equal(dest_mac, NULL_MAC))
+  while (mac_address_equal(dest_mac, NULL_MAC))
     {
       dest_mac = arp_table_lookup(ip);
-      if(clock_seconds() - start > WAIT_ON_ARP_TIMEOUT)
+      if (clock_seconds() - start > WAIT_ON_ARP_TIMEOUT)
         {
 #ifdef IPV4_DEBUG
-          LOG_DEBUG("Sending to IP %x timed out waiting for arp", ip)
+          LOG_DEBUG("Sending to IP %x timed out waiting for arp", ip);
 #endif
           return -1;
         }

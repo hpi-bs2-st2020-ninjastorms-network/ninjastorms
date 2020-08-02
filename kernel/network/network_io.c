@@ -31,7 +31,7 @@
 uint32_t
 htonl(uint32_t hostlong)
 {
-  if(is_big_endian())
+  if (is_big_endian())
     return hostlong;
   else
     return __builtin_bswap32(hostlong);
@@ -43,7 +43,7 @@ htonl(uint32_t hostlong)
 uint16_t
 htons(uint16_t hostshort)
 {
-  if(is_big_endian())
+  if (is_big_endian())
     return hostshort;
   else
     return __builtin_bswap16(hostshort);
@@ -55,7 +55,7 @@ htons(uint16_t hostshort)
 uint32_t
 ntohl(uint32_t netlong)
 {
-  if(is_big_endian())
+  if (is_big_endian())
     return netlong;
   else
     return __builtin_bswap32(netlong);
@@ -67,7 +67,7 @@ ntohl(uint32_t netlong)
 uint16_t
 ntohs(uint16_t netshort)
 {
-  if(is_big_endian())
+  if (is_big_endian())
     return netshort;
   else
     return __builtin_bswap16(netshort);
@@ -79,16 +79,16 @@ ntohs(uint16_t netshort)
 mac_address_t
 hton_mac(mac_address_t mac)
 {
-  if(is_big_endian())
+  if (is_big_endian())
     return mac;
   else
     {
       mac_address_t new;
-      for(int i = 0; i < 6; i++)
-        new.address[5-i] = mac.address[i];
+      for (int i = 0; i < 6; i++)
+        new.address[5 - i] = mac.address[i];
       return new;
     }
-  
+
 }
 
 /*
@@ -97,13 +97,13 @@ hton_mac(mac_address_t mac)
 mac_address_t
 ntoh_mac(mac_address_t mac)
 {
-  if(is_big_endian())
+  if (is_big_endian())
     return mac;
   else
     {
       mac_address_t new;
-      for(int i = 0; i < 6; i++)
-        new.address[5-i] = mac.address[i];
+      for (int i = 0; i < 6; i++)
+        new.address[5 - i] = mac.address[i];
       return new;
     }
 }

@@ -26,4 +26,4 @@
 #include <sys/types.h>
 
 // takes raw input from driver and starts encapsulation
-void start_pdu_encapsulation (raw_packet_t* buf);
+void start_pdu_encapsulation(raw_packet_t * buf);
