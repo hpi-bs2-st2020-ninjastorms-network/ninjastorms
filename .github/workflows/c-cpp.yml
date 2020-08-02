@@ -11,7 +11,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: install dependencies
-      run: sudo apt install -y gcc-arm-none-eabi binutils-arm-none-eabi gdb-multiarch openocd autoconf libtool u-boot-tools gcc-arm-none-eabi binutils-arm-none-eabi gdb-multiarch openocd autoconf libtool u-boot-tools qemu qemu-system-arm
+      run: sudo apt install -y iputils-arping gcc-arm-none-eabi binutils-arm-none-eabi gdb-multiarch openocd autoconf libtool u-boot-tools gcc-arm-none-eabi binutils-arm-none-eabi gdb-multiarch openocd autoconf libtool u-boot-tools qemu qemu-system-arm
     - name: configure
       run: |
         ./autogen.sh

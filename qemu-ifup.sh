@@ -6,6 +6,12 @@ if [[ $UID != 0 ]]; then
     exit 1
 fi
 
+address=10.0.2.15/24
+
+if [[ $# -ge 1 ]]; then
+	address=$1
+fi
+
 # Create tap device
 ip tuntap add dev tap0 mode tap
 
@@ -18,4 +24,4 @@ ip link set dev br0 up
 ip link set dev tap0 up
 
 # Assign ip to bridge
-ip address add dev br0 10.0.2.15/24
+ip address add dev br0 $address
