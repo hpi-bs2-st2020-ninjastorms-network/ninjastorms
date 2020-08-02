@@ -237,7 +237,7 @@ receive_packet()
     }
 }
 
-uint8_t
+bool
 e1000_is_available(void)
 {
   return e1000->pci_device != (void*) 0;

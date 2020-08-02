@@ -27,6 +27,7 @@
 
 #include <sys/types.h>
 #include <string.h>
+#include <stdbool.h>
 
 static int recv_queue_start  = 0;
 static int recv_queue_end    = 0;
@@ -46,7 +47,7 @@ remove_packet (void)
   return packet;
 }
 
-uint8_t
+bool
 new_packet_available (void) 
 {
   return recv_queue_start != recv_queue_end;

@@ -23,6 +23,8 @@
 #include "kernel/mmio.h"
 #include "kernel/network/ethernet.h"
 
+#include <stdbool.h>
+
 /*
  * Converts int from host byte order to network byte order.
  */
@@ -110,8 +112,8 @@ ntoh_mac(mac_address_t mac)
  * Check whether current running mode is set to little or big endian
  * via looking at the system register.
  */
-uint8_t
+bool
 is_big_endian()
 {
-  return read32(SYS_CFGDATA2) & (1 << 1);
+  return read32(SYS_CFGDATA2) & (1 << 1) > 0;
 }
