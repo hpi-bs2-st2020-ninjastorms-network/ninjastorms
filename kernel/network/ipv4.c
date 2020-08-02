@@ -32,7 +32,7 @@
  * ATTENTION: Does not implement any ipv4 standard.
  * Currently it looks up the destination mac (an arp request is send if not present)
  * and waits WAIT_ON_ARP_TIMEOUT seconds for a reply. If no reply is received
- * the funtion returns -1, otherwise it hand the data on to ethernet.
+ * the funtion returns -1, otherwise it hands the data on to ethernet.
  */
 uint32_t
 ipv4_send(uint32_t ip, void *payload, size_t len)

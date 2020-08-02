@@ -44,7 +44,7 @@ pci_enable_bus_mastering(uint32_t address)
 }
 
 /*
- * Returns the type of the bar with number number.
+ * Returns the type of the bar with number `number`.
  *
  */
 uint8_t

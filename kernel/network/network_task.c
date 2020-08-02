@@ -53,7 +53,7 @@ new_packet_available (void)
 }
 
 /*
- * A concurrent running task the receives packets from its receive ring buffer and
+ * A concurrent running task that receives packets from its receive ring buffer and
  * inserts them into the network stack.
  */
 void
@@ -72,7 +72,7 @@ network_task_recv (void)
 
 /*
  * Insert a new packet into the ring buffer if space is left.
- * Throws the packet away if queue if full.
+ * Throws the packet away if queue is full.
  */
 void
 insert_packet (uint8_t *data, size_t len)

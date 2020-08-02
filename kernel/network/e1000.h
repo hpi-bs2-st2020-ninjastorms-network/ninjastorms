@@ -24,6 +24,7 @@
 #include "kernel/network/ethernet.h"
 
 #include <sys/types.h>
+#include <stdbool.h>
 
 // #define E1000_DEBUG
 #define INTEL_VEND     0x8086  // Vendor ID for Intel 
@@ -164,7 +165,7 @@ typedef struct {
   e1000_tx_desc_t tx_descs[E1000_NUM_TX_DESC]; // Transmit Descriptor Buffers
   uint32_t io_base;     // IO Base Address
   uint32_t mem_base;   // MMIO Base Address
-  uint8_t eeprom_exists;  // A flag indicating if eeprom exists
+  bool eeprom_exists;  // A flag indicating if eeprom exists
   mac_address_t mac;      // A buffer for storing the mac address
   uint16_t rx_cur;      // Current Receive Descriptor Buffer
   uint16_t tx_cur;      // Current Transmit Descriptor Buffer
