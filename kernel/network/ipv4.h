@@ -25,7 +25,7 @@
 // #define IPV4_DEBUG
 
 #define IPV4_ADDR_LEN 4
-#define OWN_IPV4_ADDR 0x0A00020A // 10.0.2.10
-#define WAIT_ON_ARP_TIMEOUT 5 //seconds
+#define OWN_IPV4_ADDR 0x0A00020A        // 10.0.2.10
+#define WAIT_ON_ARP_TIMEOUT 5   //seconds
 
 uint32_t ipv4_send(uint32_t ip, void *payload, size_t len);

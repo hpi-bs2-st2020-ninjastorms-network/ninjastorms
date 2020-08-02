@@ -19,7 +19,7 @@
  ******************************************************************************/
 
 #ifdef HAVE_CONFIG_H
-#  include <config.h>
+#include <config.h>
 #endif
 
 #include <errno.h>
@@ -34,15 +34,16 @@ static uint32_t current_heap_address = HEAP_START;
  * Very simple implementation of sbrk that uses a global memory pool.
  * Should probably be changed to real program break in the future.
  */
-void *sbrk(size_t increment)
+void *
+sbrk(size_t increment)
 {
-  if(current_heap_address + increment > HEAP_START + HEAP_SIZE)
+  if (current_heap_address + increment > HEAP_START + HEAP_SIZE)
     {
       // No memory left
       errno = ENOMEM;
       return NULL;
     }
-  void *ptr = (void*) current_heap_address;
+  void *ptr = (void *) current_heap_address;
   current_heap_address += increment;
   return ptr;
 }

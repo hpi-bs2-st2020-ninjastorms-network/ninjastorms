@@ -31,20 +31,20 @@
  * Reads the ether type and passes the packet to the corresponding protocol.
  */
 void
-start_pdu_encapsulation(raw_packet_t *buf) 
+start_pdu_encapsulation(raw_packet_t * buf)
 {
-  ethernet_frame_t* frame = (ethernet_frame_t*) &(buf->data);
-  
+  ethernet_frame_t *frame = (ethernet_frame_t *) & (buf->data);
+
   uint16_t ether_type = ntohs(frame->ether_type);
-  
+
   switch (ether_type)
     {
-      case TYPE_ARP:
-        arp_receive(frame);
-        break;
-      case TYPE_IPv4:
-      case TYPE_IPv6: // we don't wanna support ipv6 yet ;)
-      default:
-        break;
+    case TYPE_ARP:
+      arp_receive(frame);
+      break;
+    case TYPE_IPv4:
+    case TYPE_IPv6:            // we don't wanna support ipv6 yet ;)
+    default:
+      break;
     }
 }
