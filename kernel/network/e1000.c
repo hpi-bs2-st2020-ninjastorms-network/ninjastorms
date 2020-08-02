@@ -33,6 +33,7 @@
 #include <stdlib.h>
 #include <stddef.h>
 #include <string.h>
+#include <stdbool.h>
 
 e1000_device_t* e1000;
 
@@ -62,9 +63,9 @@ detect_eeprom()
     {
       val = read_command(REG_EEPROM);
       if(val & 0x10)
-        e1000->eeprom_exists = 1;
+        e1000->eeprom_exists = true;
       else
-        e1000->eeprom_exists = 0;
+        e1000->eeprom_exists = false;
     }
 #ifdef E1000_DEBUG
   LOG_DEBUG("EEPROM exists: %x", e1000->eeprom_exists)
@@ -100,7 +101,7 @@ e1000_get_mac()
 /*
  * Initializes the receive descriptors of the e1000 and tells it where to find them.
  * For each descriptor space in the systems memory is allocated, to allow the
- * e1000 to write the packet data into.
+ * e1000 to write the packet data into it.
  * IMPORTANT: The addresses have to be 16-byte aligned!
  * See header file for information on the configured settings.
  *
@@ -179,7 +180,7 @@ start_e1000(void)
 
 /*
  * Fills the next transmit buffer with information on the data to send.
- * Tells the e1000 that a new packet is available for send and waits until its send.
+ * Tells the e1000 that a new packet is available for send and waits until it is sent.
  */
 uint32_t
 e1000_send_packet(const void *p_data, uint16_t p_len)
