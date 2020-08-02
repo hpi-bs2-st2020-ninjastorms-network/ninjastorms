@@ -1,5 +1,7 @@
 #!/bin/bash
 
+indent -version
+
 # for now only include our source files to avoid huge merge conflicts
 include_files=(\
 	"./kernel/logger/*.c" "./kernel/logger/*.h" \

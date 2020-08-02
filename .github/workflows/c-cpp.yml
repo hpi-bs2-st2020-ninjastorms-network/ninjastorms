@@ -11,7 +11,15 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: install dependencies
-      run: sudo apt install -y iputils-arping gcc-arm-none-eabi binutils-arm-none-eabi gdb-multiarch openocd autoconf libtool u-boot-tools gcc-arm-none-eabi binutils-arm-none-eabi gdb-multiarch openocd autoconf libtool u-boot-tools qemu qemu-system-arm
+      run: |
+        sudo apt install -y iputils-arping gcc-arm-none-eabi binutils-arm-none-eabi gdb-multiarch openocd autoconf libtool u-boot-tools gcc-arm-none-eabi binutils-arm-none-eabi gdb-multiarch openocd autoconf libtool u-boot-tools qemu qemu-system-arm
+        wget https://mirrors.kernel.org/gnu/indent/indent-2.2.12.tar.gz
+        tar -xvzf indent-2.2.12.tar.gz
+        cd indent-2.2.12
+        sudo ./configure && sudo make && sudo make install
+        cd ..
+    - name: lint
+      run: ./test/lint.sh
     - name: configure
       run: |
         ./autogen.sh
