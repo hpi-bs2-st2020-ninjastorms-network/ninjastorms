@@ -22,3 +22,4 @@ cat output.out
 echo "----------"
 echo "Diffing output"
 diff --strip-trailing-cr output.out test/expected_output.out
+rm output.out
