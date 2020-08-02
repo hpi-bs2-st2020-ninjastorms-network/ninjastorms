@@ -23,6 +23,7 @@
 #include "kernel/network/ethernet.h"
 
 #include <sys/types.h>
+#include <stdbool.h>
 
 // https://developer.arm.com/documentation/dui0224/i/programmer-s-reference/status-and-system-control-registers/configuration-registers-sys-cfgdatax
 // Register storing e.g. endianess
@@ -32,7 +33,7 @@ uint32_t htonl(uint32_t hostlong);
 uint16_t htons(uint16_t hostshort);
 uint32_t ntohl(uint32_t netlong);
 uint16_t ntohs(uint16_t netshort);
-uint8_t is_big_endian();
+bool is_big_endian();
 
 mac_address_t hton_mac(mac_address_t mac);
 mac_address_t ntoh_mac(mac_address_t mac);

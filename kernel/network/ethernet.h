@@ -21,6 +21,7 @@
 #pragma once
 
 #include <sys/types.h>
+#include <stdbool.h>
 
 // #define ETHERNET_DEBUG
 #define ETH_MAC_ADDRESS_LENGTH 6
@@ -48,4 +49,4 @@ typedef struct __attribute__((packed)) {
 
 void ethernet_send(mac_address_t dest_mac, ether_type eth_type, void *payload, size_t len_payload);
 const char *mac_to_str (mac_address_t mac);
-uint8_t mac_address_equal(mac_address_t mac1, mac_address_t mac2);
+bool mac_address_equal(mac_address_t mac1, mac_address_t mac2);

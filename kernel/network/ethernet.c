@@ -28,6 +28,7 @@
 #include <sys/types.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 #define INTTOHEXCHAR(val) ((val) > 9 ? (val)+'a'-10 : (val) + '0')
 
@@ -74,7 +75,7 @@ mac_to_str(mac_address_t mac)
   return tmp;
 }
 
-uint8_t
+bool
 mac_address_equal(mac_address_t mac1, mac_address_t mac2)
 {
   for(uint8_t i = 0; i < ETH_MAC_ADDRESS_LENGTH; i++)
