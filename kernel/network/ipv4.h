@@ -29,3 +29,4 @@
 #define WAIT_ON_ARP_TIMEOUT 5   //seconds
 
 uint32_t ipv4_send(uint32_t ip, void *payload, size_t len);
+void ipv4_print(uint32_t ip);
