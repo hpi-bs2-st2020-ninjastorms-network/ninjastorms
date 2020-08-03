@@ -24,9 +24,11 @@
 #include "kernel/logger/logger.h"
 #include "kernel/network/ethernet.h"
 #include "kernel/network/arp.h"
+#include "kernel/network/ipv4.h"
 
 #include <stdlib.h>
 #include <stddef.h>
+#include <stdio.h>
 
 static arp_table_entry_t *arp_table = NULL;
 
@@ -105,6 +107,28 @@ arp_table_get_mac(uint32_t ip)
 }
 
 /*
+ * Example: 
+ *  Time   |       MAC         |     IP
+ * --------+-------------------+------------------
+ *   100   | AB:CD:EF:00:11:22 | 10.10.10.10
+ */
+void
+arp_table_print(void)
+{
+  LOG_DEBUG("Arp Table:");
+  printf(" Time   |       MAC         |     IP\n");
+  printf("--------+-------------------+------------------\n");
+  for (uint32_t i = 0; i < MAX_ARP_TABLE_ENTRIES; i++)
+    {
+      arp_table_entry_t entry = arp_table[i];
+      printf(" %i\t| %s | ", (uint32_t) entry.entry_time,
+             mac_to_str(entry.mac));
+      ipv4_print(entry.ip);
+      printf("\n");
+    }
+}
+
+/*
  * Adds a new entry in the arp table at a free slot if existing,
  * otherwise overwrites the oldest entry.
  */
@@ -133,6 +157,7 @@ arp_table_add_entry(mac_address_t mac, uint32_t ip)
 #ifdef ROUTING_DEBUG
   LOG_DEBUG("Added ip %x in arp table at slot %i with time %i", ip, slot,
             (uint32_t) arp_table[slot].entry_time);
+  arp_table_print();
 #endif
 }
 
@@ -152,6 +177,7 @@ arp_table_update(mac_address_t mac, uint32_t ip)
       arp_table[position].mac = mac;
 #ifdef ROUTING_DEBUG
       LOG_DEBUG("Updated ip %x in arp table", ip);
+      arp_table_print();
 #endif
       return true;
     }

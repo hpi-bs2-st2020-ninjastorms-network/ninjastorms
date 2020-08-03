@@ -26,6 +26,7 @@
 #include "kernel/logger/logger.h"
 
 #include <sys/types.h>
+#include <stdio.h>
 
 /*
  * Very basic implementation of sending an ipv4 packet.
@@ -54,4 +55,13 @@ ipv4_send(uint32_t ip, void *payload, size_t len)
 
   ethernet_send(dest_mac, TYPE_IPv4, payload, len);
   return 0;
+}
+
+void
+ipv4_print(uint32_t ip)
+{
+  /* *INDENT-OFF* */
+  uint8_t *bytes = (uint8_t *) &ip;
+  /* *INDENT-ON* */
+  printf("%i.%i.%i.%i", bytes[3], bytes[2], bytes[1], bytes[0]);
 }

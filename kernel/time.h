@@ -36,3 +36,4 @@ clock_t clock_seconds();
 clock_t clock_minutes();
 clock_t clock_hours();
 const char * clock_formatted_msms();
+const char * clock_time_to_str(clock_t time);

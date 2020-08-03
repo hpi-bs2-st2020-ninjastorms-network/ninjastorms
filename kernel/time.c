@@ -94,7 +94,13 @@ clock_hours()
 const char *
 clock_formatted_msms()
 {
-  uint64_t mils = clock_millis(), secs = mils / 1000, mins = mils / 60000;
+  return clock_time_to_str(clock_millis());
+}
+
+const char *
+clock_time_to_str(clock_t time)
+{
+  uint64_t mils = time, secs = mils / 1000, mins = mils / 60000;
   char *format = "mm:ss:lll";   // minutes:seconds:millis
   format[0] = INTTOCHAR((mins / 10) % 10);
   format[1] = INTTOCHAR(mins % 10);
