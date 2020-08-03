@@ -142,7 +142,6 @@ pci_write64(uint32_t address, uint64_t value)
                              >> upper_offset * 8) | lower_word_write;
       write_word(address - lower_offset, lower_word);
 
-      uint32_t middle_word_read = pci_read32(address + upper_offset);
       uint32_t middle_word_write = (uint32_t) (value >> upper_offset * 8);
       write_word(address + upper_offset, middle_word_write);
 

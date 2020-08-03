@@ -28,11 +28,12 @@
 // #define ROUTING_DEBUG
 
 #define MAX_ARP_TABLE_ENTRIES 	10
-#define MAX_ARP_TABLE_AGE 		300 // seconds
+#define MAX_ARP_TABLE_AGE 		300     // seconds
 
 #define ARP_NULL_ENTRY ((arp_table_entry_t){0, {{0}}, 0})
 
-typedef struct {
+typedef struct
+{
   uint32_t ip;
   mac_address_t mac;
   clock_t entry_time;

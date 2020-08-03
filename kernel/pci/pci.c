@@ -83,11 +83,11 @@ get_bar_size(uint32_t base, uint8_t number)
  * Currently there is only one pci device thus there is no memory management.
  */
 uint32_t
-pci_alloc_memory(pci_device_t* device, uint8_t bar)
+pci_alloc_memory(pci_device_t * device, uint8_t bar)
 {
   uint8_t type = get_bar_type(device->config_base, bar);
   uint32_t address = 0;
-  if(type)
+  if (type)
     {
       // io space
       address = 0x43000000;
@@ -109,24 +109,26 @@ void
 enumerate_pci_devices(void)
 {
 #ifdef PCI_DEBUG
-  LOG_DEBUG("Enumerating PCI devices:")
+  LOG_DEBUG("Enumerating PCI devices:");
 #endif
   for (int i = 11; i < 32; ++i)
     {
       uint32_t device_addr = (PCI_CONFIG + ((i) << PCI_DEVICE_BIT_OFFSET));
       int32_t vendor_id = read16(device_addr + PCI_VENDOR_ID);
       int32_t device_id = read16(device_addr + PCI_DEVICE_ID);
-      
-      if(vendor_id == PCI_INVALID_VENDOR) continue;
 
-      pci_device_t* device = &pci_devices[i - 11];
+      if (vendor_id == PCI_INVALID_VENDOR)
+        continue;
+
+      pci_device_t *device = &pci_devices[i - 11];
       device->config_base = device_addr;
       device->pci_slot_id = i;
       device->vendor_id = vendor_id;
       device->device_id = device_id;
 
 #ifdef PCI_DEBUG
-    LOG_DEBUG("Device slot: %i at: 0x%x DeviceID: 0x%x VendorID: 0x%x", i, device_addr, vendor_id, device_id)
+      LOG_DEBUG("Device slot: %i at: 0x%x DeviceID: 0x%x VendorID: 0x%x", i,
+                device_addr, vendor_id, device_id);
 #endif
     }
 }
@@ -151,17 +153,20 @@ configure_board(void)
   uint8_t slot = 0;
   for (int i = 11; i < 32; ++i)
     {
-      if(read32((PCI_SELF_CONFIG + (i << PCI_DEVICE_BIT_OFFSET)) + PCI_VENDOR_ID) == VP_PCI_DEV_ID
-          && read32((PCI_SELF_CONFIG + (i << PCI_DEVICE_BIT_OFFSET)) + PCI_CLASS_REVISION) == VP_PCI_CLASS_ID)
+      if (read32((PCI_SELF_CONFIG + (i << PCI_DEVICE_BIT_OFFSET)) +
+                 PCI_VENDOR_ID) == VP_PCI_DEV_ID
+          && read32((PCI_SELF_CONFIG + (i << PCI_DEVICE_BIT_OFFSET)) +
+                    PCI_CLASS_REVISION) == VP_PCI_CLASS_ID)
         {
           slot = i;
           break;
         }
     }
-  if(slot == 0){
-    LOG_ERROR("Cannot find PCI core!")
-    return -1;
-  }
+  if (slot == 0)
+    {
+      LOG_ERROR("Cannot find PCI core!");
+      return -1;
+    }
   uint32_t pci_config_base = PCI_CONFIG + (slot << PCI_DEVICE_BIT_OFFSET);
 
   // write id of board
@@ -180,15 +185,15 @@ configure_board(void)
  * identified by the vendor_id and device_id.
  * If the device cannot be found, NULL is returned.
  */
-pci_device_t*
+pci_device_t *
 pci_get_device(uint16_t vendor_id, uint16_t device_id)
 {
   for (uint8_t i = 0; i < MAX_PCI_DEVICES; ++i)
-  {
-    pci_device_t* device = &pci_devices[i];
-    if(device->vendor_id == vendor_id && device->device_id == device_id)
-      return device;
-  }
+    {
+      pci_device_t *device = &pci_devices[i];
+      if (device->vendor_id == vendor_id && device->device_id == device_id)
+        return device;
+    }
   return NULL;
 }
 
@@ -200,7 +205,7 @@ void
 pci_init(void)
 {
 #ifdef PCI_DEBUG
-  LOG_DEBUG("Initiating PCI")
+  LOG_DEBUG("Initiating PCI");
 #endif
   configure_board();
   enumerate_pci_devices();

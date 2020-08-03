@@ -28,4 +28,5 @@
 #define LOG_ERROR(...) general_log(3, __FILE__, __VA_ARGS__);
 #define LOG_FATAL(...) general_log(4, __FILE__, __VA_ARGS__);
 
-void general_log(uint32_t severity, const char* file, const char* format, ...);
+void general_log(uint32_t severity, const char *file, const char *format,
+                 ...);

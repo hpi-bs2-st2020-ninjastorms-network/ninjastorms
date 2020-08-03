@@ -115,5 +115,5 @@ ntoh_mac(mac_address_t mac)
 bool
 is_big_endian()
 {
-  return (bool)(read32(SYS_CFGDATA2) & (1 << 1));
+  return (bool) (read32(SYS_CFGDATA2) & (1 << 1));
 }
