@@ -35,7 +35,7 @@
 #include <string.h>
 #include <stdbool.h>
 
-e1000_device_t* e1000;
+static e1000_device_t* e1000;
 
 void
 write_command(uint16_t address, uint32_t value)
@@ -194,7 +194,6 @@ e1000_send_packet(const void *p_data, uint16_t p_len)
   curr->length = p_len;
   curr->cmd = CMD_EOP | CMD_IFCS | CMD_RS;
   curr->status = 0;
-  uint8_t old_cur = e1000->tx_cur;
   e1000->tx_cur = (e1000->tx_cur + 1) % E1000_NUM_TX_DESC;
 
   write_command(REG_TXDESCTAIL, e1000->tx_cur);
