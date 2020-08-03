@@ -49,6 +49,6 @@ unsigned int is_privileged(void)
 void halt_execution(void)
 {
     if (is_privileged()){
-        // asm("hlt");
+        // asm("hlt"); // hlt is not supported on our ARM system
     }
 }
