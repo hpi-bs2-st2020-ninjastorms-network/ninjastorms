@@ -33,7 +33,9 @@
 void
 start_pdu_encapsulation(raw_packet_t * buf)
 {
-  ethernet_frame_t *frame = (ethernet_frame_t *) & (buf->data);
+  /* *INDENT-OFF* */
+  ethernet_frame_t *frame = (ethernet_frame_t *) &(buf->data);
+  /* *INDENT-ON* */
 
   uint16_t ether_type = ntohs(frame->ether_type);
 
