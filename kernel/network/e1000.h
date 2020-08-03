@@ -172,8 +172,6 @@ typedef struct {
   pci_device_t *pci_device; // Corresponding PCI Device
 } e1000_device_t;
 
-extern e1000_device_t* e1000;
-
 void e1000_init(void);
 void e1000_irq_handler(void);
 uint32_t e1000_send_packet(const void *p_data, uint16_t p_len);

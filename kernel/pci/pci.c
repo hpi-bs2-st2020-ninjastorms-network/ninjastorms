@@ -45,7 +45,6 @@ pci_enable_bus_mastering(uint32_t address)
 
 /*
  * Returns the type of the bar with number `number`.
- *
  */
 uint8_t
 get_bar_type(uint32_t base, uint8_t number)
@@ -86,7 +85,6 @@ get_bar_size(uint32_t base, uint8_t number)
 uint32_t
 pci_alloc_memory(pci_device_t* device, uint8_t bar)
 {
-  uint32_t size = get_bar_size(device->config_base, bar);
   uint8_t type = get_bar_type(device->config_base, bar);
   uint32_t address = 0;
   if(type)
