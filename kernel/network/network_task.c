@@ -29,26 +29,26 @@
 #include <string.h>
 #include <stdbool.h>
 
-static int recv_queue_start  = 0;
-static int recv_queue_end    = 0;
+static int recv_queue_start = 0;
+static int recv_queue_end = 0;
 static raw_packet_t recv_packet_queue[MAX_PACKET_COUNT] = { 0 };
 
 /*
  * Takes the next packet out of the receive queue and returns it (simple pop operation).
  */
-raw_packet_t*
-remove_packet (void)
+raw_packet_t *
+remove_packet(void)
 {
   if (recv_queue_start == recv_queue_end)
     return 0;
 
-  raw_packet_t* packet = &recv_packet_queue[recv_queue_start];
+  raw_packet_t *packet = &recv_packet_queue[recv_queue_start];
   recv_queue_start = (recv_queue_start + 1) % MAX_PACKET_COUNT;
   return packet;
 }
 
 bool
-new_packet_available (void) 
+new_packet_available(void)
 {
   return recv_queue_start != recv_queue_end;
 }
@@ -58,12 +58,12 @@ new_packet_available (void)
  * inserts them into the network stack.
  */
 void
-network_task_recv (void)
+network_task_recv(void)
 {
   routing_init();
-  while(1)
+  while (1)
     {
-      if(new_packet_available())
+      if (new_packet_available())
         {
           raw_packet_t *packet = remove_packet();
           start_pdu_encapsulation(packet);
@@ -76,7 +76,7 @@ network_task_recv (void)
  * Throws the packet away if queue is full.
  */
 void
-insert_packet (uint8_t *data, size_t len)
+insert_packet(uint8_t * data, size_t len)
 {
   int new_end = (recv_queue_end + 1) % MAX_PACKET_COUNT;
   if (new_end != recv_queue_start)

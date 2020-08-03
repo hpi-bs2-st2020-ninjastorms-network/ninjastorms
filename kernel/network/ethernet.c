@@ -37,21 +37,24 @@
  * Adds 0-padding if necessary and hands the packet to the network card.
  */
 void
-ethernet_send(mac_address_t dest_mac, ether_type eth_type, void *payload, size_t len_payload)
+ethernet_send(mac_address_t dest_mac, ether_type eth_type, void *payload,
+              size_t len_payload)
 {
   // make sure ethernet frame is at least 60 bytes long
-  uint8_t len_padding = len_payload < MINIMUM_PAYLOAD_LENGTH ? MINIMUM_PAYLOAD_LENGTH - len_payload : 0;
+  uint8_t len_padding = len_payload < MINIMUM_PAYLOAD_LENGTH
+    ? MINIMUM_PAYLOAD_LENGTH - len_payload : 0;
   uint32_t len = len_padding + len_payload;
-  ethernet_frame_t *eth_frame = (ethernet_frame_t *) malloc(sizeof(ethernet_frame_t) + len);
+  ethernet_frame_t *eth_frame =
+    (ethernet_frame_t *) malloc(sizeof(ethernet_frame_t) + len);
   eth_frame->dest_mac = hton_mac(dest_mac);
   eth_frame->src_mac = hton_mac(e1000_get_mac());
   eth_frame->ether_type = htons(eth_type);
   memcpy(eth_frame->payload, payload, len);
 
 #ifdef ETHERNET_DEBUG
-  LOG_DEBUG("Payload is %i, adding %i padding", len_payload, len_padding)
+  LOG_DEBUG("Payload is %i, adding %i padding", len_payload, len_padding);
 #endif
-  if(len_padding != 0)
+  if (len_padding != 0)
     {
       memset(eth_frame->payload + len_payload, 0, len_padding);
     }
@@ -64,13 +67,13 @@ ethernet_send(mac_address_t dest_mac, ether_type eth_type, void *payload, size_t
 const char *
 mac_to_str(mac_address_t mac)
 {
-  mac = hton_mac(mac); // convert mac to big endian for processing
+  mac = hton_mac(mac);          // convert mac to big endian for processing
   char *tmp = "00:11:22:33:44:55";
 
-  for(int i = 0, j = 0; i < 6; i++, j += 3)
+  for (int i = 0, j = 0; i < 6; i++, j += 3)
     {
       tmp[j] = INTTOHEXCHAR(mac.address[i] >> 4);
-      tmp[j+1] = INTTOHEXCHAR(mac.address[i] & 0x0F);
+      tmp[j + 1] = INTTOHEXCHAR(mac.address[i] & 0x0F);
     }
   return tmp;
 }
@@ -78,9 +81,9 @@ mac_to_str(mac_address_t mac)
 bool
 mac_address_equal(mac_address_t mac1, mac_address_t mac2)
 {
-  for(uint8_t i = 0; i < ETH_MAC_ADDRESS_LENGTH; i++)
+  for (uint8_t i = 0; i < ETH_MAC_ADDRESS_LENGTH; i++)
     {
-      if(mac1.address[i] != mac2.address[i])
+      if (mac1.address[i] != mac2.address[i])
         return 0;
     }
   return 1;

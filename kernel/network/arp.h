@@ -35,17 +35,18 @@
 #define HTYPE_ETHERNET 1
 
 // https://wiki.osdev.org/ARP
-typedef struct  __attribute__((packed)) {
+typedef struct __attribute__((packed))
+{
   uint16_t hardware_type;
   uint16_t protocol_type;
-  uint8_t hardware_addr_len;  // ethernet = 6
-  uint8_t protocol_addr_len;  // ipv4 = 4
-  uint16_t opcode; // ARP OP Code: see above
+  uint8_t hardware_addr_len;    // ethernet = 6
+  uint8_t protocol_addr_len;    // ipv4 = 4
+  uint16_t opcode;              // ARP OP Code: see above
   mac_address_t src_hardware_addr;
   uint32_t src_ip_address;
   mac_address_t dest_hardware_addr;
   uint32_t dest_ip_address;
 } arp_frame_t;
 
-void arp_receive(ethernet_frame_t *frame);
+void arp_receive(ethernet_frame_t * frame);
 void arp_send_request(uint32_t ip);

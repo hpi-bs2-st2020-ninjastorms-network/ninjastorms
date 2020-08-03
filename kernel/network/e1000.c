@@ -17,7 +17,7 @@
  *    You should have received a copy of the GNU General Public License       *
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.   *
  ******************************************************************************/
- 
+
 #include "e1000.h"
 
 #include "kernel/pci/pci.h"
@@ -35,18 +35,18 @@
 #include <string.h>
 #include <stdbool.h>
 
-static e1000_device_t* e1000;
+static e1000_device_t *e1000;
 
 void
 write_command(uint16_t address, uint32_t value)
 {
-  pci_write32(e1000->mem_base+address, value);
+  pci_write32(e1000->mem_base + address, value);
 }
 
 uint32_t
 read_command(uint32_t address)
 {
-  return pci_read32(e1000->mem_base+address);
+  return pci_read32(e1000->mem_base + address);
 }
 
 /*
@@ -59,16 +59,16 @@ detect_eeprom()
   write_command(REG_EEPROM, 0x1);
 
   uint32_t val = 0;
-  for(uint16_t i = 0; i < 1000 && !e1000->eeprom_exists; i++)
+  for (uint16_t i = 0; i < 1000 && !e1000->eeprom_exists; i++)
     {
       val = read_command(REG_EEPROM);
-      if(val & 0x10)
+      if (val & 0x10)
         e1000->eeprom_exists = true;
       else
         e1000->eeprom_exists = false;
     }
 #ifdef E1000_DEBUG
-  LOG_DEBUG("EEPROM exists: %x", e1000->eeprom_exists)
+  LOG_DEBUG("EEPROM exists: %x", e1000->eeprom_exists);
 #endif
 }
 
@@ -78,16 +78,16 @@ detect_eeprom()
  */
 void
 read_e1000_hardware_address()
-{ 
+{
   uint32_t mem_base_mac = e1000->mem_base + MAC_OFFSET;
   uint64_t mac_data = pci_read64(mem_base_mac);
-  if(mac_data << 16 != 0)
+  if (mac_data << 16 != 0)
     {
       mac_address_t mac_network;
       memcpy(&mac_network, &mac_data, 6);
       e1000->mac = ntoh_mac(mac_network);
 #ifdef E1000_DEBUG
-      LOG_DEBUG("MAC: %s", mac_to_str(e1000->mac))
+      LOG_DEBUG("MAC: %s", mac_to_str(e1000->mac));
 #endif
     }
 }
@@ -111,21 +111,24 @@ e1000_get_mac()
 void
 init_receive_descriptors()
 {
-  for(int i = 0; i < E1000_NUM_RX_DESC; i++) 
+  for (int i = 0; i < E1000_NUM_RX_DESC; i++)
     {
-      e1000->rx_descs[i].addr = (uint32_t) malloc(MAX_PACKET_SIZE + sizeof(e1000_rx_desc_t));
+      e1000->rx_descs[i].addr =
+        (uint32_t) malloc(MAX_PACKET_SIZE + sizeof(e1000_rx_desc_t));
       e1000->rx_descs[i].status = 0;
     }
 
-  write_command(REG_RXDESCLO, (uint32_t)e1000->rx_descs);
+  write_command(REG_RXDESCLO, (uint32_t) e1000->rx_descs);
   write_command(REG_RXDESCHI, 0);
 
   write_command(REG_RXDESCLEN, E1000_NUM_RX_DESC * sizeof(e1000_rx_desc_t));
 
   write_command(REG_RXDESCHEAD, 0);
-  write_command(REG_RXDESCTAIL, E1000_NUM_RX_DESC-1);
+  write_command(REG_RXDESCTAIL, E1000_NUM_RX_DESC - 1);
   e1000->rx_cur = 0;
-  write_command(REG_RCTRL, RCTL_EN | RCTL_SBP| RCTL_UPE | RCTL_MPE | RCTL_LBM_NONE | RTCL_RDMTS_HALF | RCTL_BAM | RCTL_SECRC  | RCTL_BSIZE_8192);
+  write_command(REG_RCTRL,
+                RCTL_EN | RCTL_SBP | RCTL_UPE | RCTL_MPE | RCTL_LBM_NONE |
+                RTCL_RDMTS_HALF | RCTL_BAM | RCTL_SECRC | RCTL_BSIZE_8192);
 }
 
 /*
@@ -151,7 +154,7 @@ init_transmit_descriptors()
   e1000->tx_cur = 0;
   // works with e1000 only
   write_command(REG_TCTRL, read_command(REG_TCTRL) | TCTL_EN | TCTL_PSP);
-  write_command(REG_TIPG,  0x0060200A);
+  write_command(REG_TIPG, 0x0060200A);
 }
 
 void
@@ -161,7 +164,8 @@ enable_interrupt()
   write_command(REG_IMASK, 0x1F2D4);
 }
 
-void start_link(void)
+void
+start_link(void)
 {
   uint32_t flags = read_command(REG_CTRL);
   write_command(REG_CTRL, flags | ECTRL_SLU);
@@ -185,9 +189,10 @@ start_e1000(void)
 uint32_t
 e1000_send_packet(const void *p_data, uint16_t p_len)
 {
-  if(!e1000_is_available()) return -1;
+  if (!e1000_is_available())
+    return -1;
 #ifdef E1000_DEBUG
-  LOG_DEBUG("Sending packet with len %i", p_len)
+  LOG_DEBUG("Sending packet with len %i", p_len);
 #endif
   e1000_tx_desc_t *curr = &(e1000->tx_descs[e1000->tx_cur]);
   curr->addr = (uint32_t) p_data;
@@ -198,9 +203,9 @@ e1000_send_packet(const void *p_data, uint16_t p_len)
 
   write_command(REG_TXDESCTAIL, e1000->tx_cur);
 
-  while(!(curr->status));
+  while (!(curr->status));
 #ifdef E1000_DEBUG
-  LOG_DEBUG("Packet send!")
+  LOG_DEBUG("Packet send!");
 #endif
   return 0;
 }
@@ -214,17 +219,19 @@ e1000_send_packet(const void *p_data, uint16_t p_len)
 void
 receive_packet()
 {
-  if(!e1000_is_available()) return;
-  
+  if (!e1000_is_available())
+    return;
+
   uint16_t old_cur;
 
-  while(e1000->rx_descs[e1000->rx_cur].status & 0x1)
+  while (e1000->rx_descs[e1000->rx_cur].status & 0x1)
     {
-      uint8_t* buf = (uint8_t *) ((uint32_t) e1000->rx_descs[e1000->rx_cur].addr);
+      uint8_t *buf =
+        (uint8_t *) ((uint32_t) e1000->rx_descs[e1000->rx_cur].addr);
       uint16_t len = e1000->rx_descs[e1000->rx_cur].length;
 
 #ifdef E1000_DEBUG
-      LOG_DEBUG("Received packet with length: %i", len)
+      LOG_DEBUG("Received packet with length: %i", len);
 #endif
 
       insert_packet(buf, len);
@@ -239,7 +246,7 @@ receive_packet()
 bool
 e1000_is_available(void)
 {
-  return e1000->pci_device != (void*) 0;
+  return e1000->pci_device != (void *) 0;
 }
 
 void
@@ -251,7 +258,7 @@ e1000_irq_handler(void)
   if (cause & LSC)
     start_link();
   if (cause & RXDMT0)
-    ; // good threshold
+    ;                           // good threshold
   if (cause & RXT0)
     receive_packet();
 }
@@ -263,32 +270,32 @@ e1000_irq_handler(void)
 void
 e1000_init(void)
 {
-  e1000 = (e1000_device_t*) malloc(sizeof(e1000_device_t));
-  if(e1000 == NULL)
+  e1000 = (e1000_device_t *) malloc(sizeof(e1000_device_t));
+  if (e1000 == NULL)
     {
-      LOG_ERROR("No memory for e1000 struct left!")
+      LOG_ERROR("No memory for e1000 struct left!");
       return;
     }
 
 #ifdef E1000_DEBUG
-  LOG_DEBUG("Initializing driver.")
+  LOG_DEBUG("Initializing driver.");
 #endif
   e1000->pci_device = pci_get_device(INTEL_VEND, E1000_DEV);
-  
-  if(!e1000_is_available())
+
+  if (!e1000_is_available())
     {
-      LOG_ERROR("Network card not found!")
+      LOG_ERROR("Network card not found!");
       return;
     }
 #ifdef E1000_DEBUG
-  LOG_DEBUG("Network card found!")
+  LOG_DEBUG("Network card found!");
 #endif
 
   e1000->mem_base = pci_alloc_memory(e1000->pci_device, 0);
   e1000->io_base = pci_alloc_memory(e1000->pci_device, 1);
   pci_enable_bus_mastering(e1000->pci_device->config_base);
 #ifdef E1000_DEBUG
-  LOG_DEBUG("Membase: 0x%x iobase: 0x%x", e1000->mem_base, e1000->io_base)
+  LOG_DEBUG("Membase: 0x%x iobase: 0x%x", e1000->mem_base, e1000->io_base);
 #endif
   start_e1000();
 }

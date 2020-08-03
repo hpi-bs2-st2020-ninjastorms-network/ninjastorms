@@ -30,23 +30,27 @@
 #define NULL_MAC      ((mac_address_t) {{0x00,0x00,0x00,0x00,0x00,0x00}})
 #define BROADCAST_MAC ((mac_address_t) {{0xff,0xff,0xff,0xff,0xff,0xff}})
 
-typedef enum {
+typedef enum
+{
   TYPE_ARP = 0x0806,
   TYPE_IPv4 = 0x0800,
   TYPE_IPv6 = 0x86dd
 } ether_type;
 
-typedef struct __attribute__((packed)) {
+typedef struct __attribute__((packed))
+{
   uint8_t address[6];
 } mac_address_t;
 
-typedef struct __attribute__((packed)) {
+typedef struct __attribute__((packed))
+{
   mac_address_t dest_mac;
   mac_address_t src_mac;
   ether_type ether_type;
   uint8_t payload[];
 } ethernet_frame_t;
 
-void ethernet_send(mac_address_t dest_mac, ether_type eth_type, void *payload, size_t len_payload);
-const char *mac_to_str (mac_address_t mac);
+void ethernet_send(mac_address_t dest_mac, ether_type eth_type, void *payload,
+                   size_t len_payload);
+const char *mac_to_str(mac_address_t mac);
 bool mac_address_equal(mac_address_t mac1, mac_address_t mac2);

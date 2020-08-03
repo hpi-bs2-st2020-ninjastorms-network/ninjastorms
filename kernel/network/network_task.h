@@ -26,11 +26,12 @@
 
 #define MAX_PACKET_COUNT 128
 
-struct raw_packet {
+struct raw_packet
+{
   uint16_t length;
   uint8_t data[MAX_PACKET_SIZE];
 };
 typedef struct raw_packet raw_packet_t;
 
-void network_task_recv (void);
-void insert_packet (uint8_t *data, size_t len);
+void network_task_recv(void);
+void insert_packet(uint8_t * data, size_t len);
