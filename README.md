@@ -10,6 +10,8 @@
      Created by the Operating Systems and Middleware Group at Hasso
                  Plattner Institute Potsdam, Germany.
 
+![C/C++ CI](https://github.com/hpi-bs2-st2020-ninjastorms-network/ninjastorms/workflows/C/C++%20CI/badge.svg)
+
 # Introduction
 
 NinjaStorms is an attempt to create a simple RealTime Operating System which
